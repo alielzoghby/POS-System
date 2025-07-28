@@ -1,0 +1,66 @@
+<div class="state-container">
+  <ng-container [ngSwitch]="state">
+    <ng-container *ngSwitchCase="SectionStateStatus.Disconnected">
+      <div class="state-section background problematic fade-in">
+        <div class="handle-icon">
+          <img [src]="emptyStateImagePath || 'assets/img/network-server-disconnect.svg'" alt="Network disconnected icon" />
+        </div>
+        <div class="error-message">
+          <span>{{ 'connectionBroken' | translate }}</span>
+          <!-- Translated message -->
+        </div>
+        <div class="try-again cursor-pointer" (click)="onReload()">{{ 'tryAgain' | translate }}</div>
+        <!-- Translated button -->
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="SectionStateStatus.Error">
+      <div class="state-section background problematic fade-in">
+        <div class="handle-icon handle-error-icon">
+          <img [src]="emptyStateImagePath || 'assets/img/error.png'" alt="Error icon" />
+        </div>
+        <div *ngIf="errorStateLabel" class="error-message">
+          <span>{{ errorStateLabel }}</span>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchCase="SectionStateStatus.Empty">
+      <div class="state-section background empty fade-in">
+        <div class="handle-icon">
+          <img [src]="emptyStateImagePath || 'assets/img/empty-state.png'" alt="Empty state icon" />
+        </div>
+        <div class="empty-message">
+          <h3 class="main-text">{{ emptyStateMainLabel }}</h3>
+          <p class="sub-text">{{ emptyStateSubLabel }}</p>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngSwitchDefault>
+      <div class="fade-in state-section">
+        <ng-container *ngIf="state === SectionStateStatus.Loading || state === SectionStateStatus.LoadingTransparent">
+          <div class="state-section__loading" [ngClass]="{ 'state-section__loading-hide-content': state === SectionStateStatus.Loading }">
+            <app-loader></app-loader>
+            <!-- Loading label for accessibility -->
+            <div *ngIf="loadingLabel" class="mt-4">
+              <div class="ellipsis d-flex align-items-end">
+                <span>{{ loadingLabel }}</span>
+                <div class="dots"></div>
+              </div>
+            </div>
+          </div>
+
+          <div [ngClass]="{ 'state-section__loading-transparent': state === SectionStateStatus.LoadingTransparent }"></div>
+        </ng-container>
+
+        <div
+          class="state-section__content"
+          [ngClass]="{ 'state-section__loading-transparent-content': state === SectionStateStatus.LoadingTransparent }"
+        >
+          <ng-content></ng-content>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>

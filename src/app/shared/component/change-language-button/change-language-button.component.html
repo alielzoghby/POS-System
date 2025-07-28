@@ -1,0 +1,18 @@
+<div>
+  <p-button [text]="true" severity="secondary" (onClick)="menu.toggle($event)">
+    <div class="flex items-center justify-center gap-2">
+      <i class="pi pi-globe"></i>
+      <span>{{ 'Language' | translate }}</span>
+      <img [src]="'assets/icons/' + savedLang + '.png'" class="custom-menu-icon" />
+    </div>
+  </p-button>
+
+  <p-menu #menu [model]="items" appendTo="body" [popup]="true">
+    <ng-template #item let-item>
+      <div class="custom-menu flex items-center gap-2" (click)="item.command()">
+        <img [src]="item.icon" class="custom-menu-icon" />
+        <span>{{item.label}}</span>
+      </div>
+    </ng-template>
+  </p-menu>
+</div>

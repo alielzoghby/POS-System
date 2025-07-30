@@ -51,7 +51,9 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     if (!this.placeholder) {
-      this.placeholder = this.translationService.instant('SelectAnOption');
+      this.translationService.get('SelectAnOption').subscribe((translated) => {
+        this.placeholder = translated;
+      });
     }
     this.loadOptions();
   }

@@ -5,12 +5,12 @@
   transform-style: preserve-3d;
 }
 
-.spinner>div {
-  background-color: rgba(255, 111, 0, 0.2);
+.spinner > div {
+  background-color: var(--text-color);
   height: 100%;
   position: absolute;
   width: 100%;
-  border: 2.2px solid #ff6f00;
+  border: 2.2px solid var(--primary-color);
 }
 
 .spinner div:nth-of-type(1) {

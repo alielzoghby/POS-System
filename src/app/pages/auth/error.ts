@@ -41,7 +41,11 @@ import { TranslateModule } from '@ngx-translate/core';
               <span class="text-muted-color mb-8">{{ 'ErrorOccurredMessage' | translate }}</span>
               <img src="assets/img/asset-error.svg" alt="Error" class="mb-8" width="80%" />
               <div class="col-span-12 mt-8 text-center">
-                <p-button label="Go to Dashboard" routerLink="/" severity="danger" />
+                <p-button
+                  label="{{ 'GoToDashboard' | translate }}"
+                  routerLink="/"
+                  severity="danger"
+                />
               </div>
             </div>
           </div>

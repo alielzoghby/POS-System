@@ -1,25 +1,68 @@
 import { Component } from '@angular/core';
-import { NotificationsWidget } from './components/notificationswidget';
-import { StatsWidget } from './components/statswidget';
-import { RecentSalesWidget } from './components/recentsaleswidget';
-import { BestSellingWidget } from './components/bestsellingwidget';
-import { RevenueStreamWidget } from './components/revenuestreamwidget';
+import { PosSummaryComponent } from './components/app.pos-summary.component';
+import { PosProductTableComponent } from './components/app.pos-products-table.component';
 
 @Component({
-    selector: 'app-dashboard',
-    imports: [StatsWidget, RecentSalesWidget, BestSellingWidget, RevenueStreamWidget, NotificationsWidget],
-    template: `
-        <div class="grid grid-cols-12 gap-8">
-            <app-stats-widget class="contents" />
-            <div class="col-span-12 xl:col-span-6">
-                <app-recent-sales-widget />
-                <app-best-selling-widget />
-            </div>
-            <div class="col-span-12 xl:col-span-6">
-                <app-revenue-stream-widget />
-                <app-notifications-widget />
-            </div>
-        </div>
-    `
+  selector: 'app-dashboard',
+  imports: [PosSummaryComponent, PosProductTableComponent],
+  template: `
+    <div class="grid grid-cols-12 gap-8 h-full">
+      <!-- Products Table Section -->
+      <div class="col-span-12 xl:col-span-8 lg:overflow-hidden">
+        <app-pos-product-table
+          [products]="products"
+          (productRemoved)="removeProduct($event)"
+          (productUpdated)="calculateTotals()"
+        />
+      </div>
+
+      <!-- Summary Section -->
+      <div class="col-span-12 xl:col-span-4 h-full lg:overflow-hidden">
+        <app-pos-summary
+          [subtotal]="subtotal"
+          [taxRate]="0.14"
+          (checkout)="handleCheckout($event)"
+        />
+      </div>
+    </div>
+  `,
 })
-export class Dashboard {}
+export class Dashboard {
+  products = [
+    { name: 'Cappuccino', unitPrice: 4.5, quantity: 2 },
+    { name: 'Cheeseburger', unitPrice: 8.0, quantity: 1 },
+    { name: 'Chocolate Cake', unitPrice: 5.5, quantity: 1 },
+    { name: 'Cappuccino', unitPrice: 4.5, quantity: 2 },
+    { name: 'Cheeseburger', unitPrice: 8.0, quantity: 1 },
+    { name: 'Chocolate Cake', unitPrice: 5.5, quantity: 1 },
+    { name: 'Cappuccino', unitPrice: 4.5, quantity: 2 },
+    { name: 'Cheeseburger', unitPrice: 8.0, quantity: 1 },
+    { name: 'Chocolate Cake', unitPrice: 5.5, quantity: 1 },
+    { name: 'Cappuccino', unitPrice: 4.5, quantity: 2 },
+    { name: 'Cheeseburger', unitPrice: 8.0, quantity: 1 },
+    { name: 'Chocolate Cake', unitPrice: 5.5, quantity: 1 },
+    { name: 'Cappuccino', unitPrice: 4.5, quantity: 2 },
+    { name: 'Cheeseburger', unitPrice: 8.0, quantity: 1 },
+    { name: 'Chocolate Cake', unitPrice: 5.5, quantity: 1 },
+  ];
+
+  subtotal = 0;
+
+  ngOnInit() {
+    this.calculateTotals();
+  }
+
+  calculateTotals() {
+    this.subtotal = this.products.reduce((acc, item) => acc + item.unitPrice * item.quantity, 0);
+  }
+
+  removeProduct(index: number) {
+    this.products.splice(index, 1);
+    this.calculateTotals();
+  }
+
+  handleCheckout(event: any) {
+    console.log('Checkout:', event);
+    // send to BE or show confirmation
+  }
+}

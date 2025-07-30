@@ -133,11 +133,6 @@ export class BaseComponent<Filters = any> implements OnDestroy {
         });
       }),
       catchError((err) => {
-        if (err && err) {
-          this.showErrorMessage({ errors: err.errors }, extra?.errorMessagePath);
-        } else {
-          this.showErrorMessage(err, extra?.errorMessagePath);
-        }
         this.sectionState = SectionStateStatus.Ready;
         changeDetector?.markForCheck();
         return throwError(err);

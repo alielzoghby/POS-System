@@ -2,8 +2,6 @@ import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MenuItem } from 'primeng/api';
 import { ConfigConstant } from '../../config/config.constant';
-import { LayoutService } from '../../services/general/layout.service';
-import { ScreenSizes } from '../../enums/screen-sizes.enum';
 import { StorageConstant } from '../../config/storage.constant';
 import { LanguageEnum } from '../../enums/language.enum';
 import { TieredMenu } from 'primeng/tieredmenu';
@@ -28,10 +26,7 @@ export class ChangeLanguageButtonComponent implements OnInit {
   onScroll() {
     if (this.menu.visible) this.menu?.alignOverlay?.();
   }
-  constructor(
-    private translate: TranslateService,
-    private LayoutService: LayoutService
-  ) {
+  constructor(private translate: TranslateService) {
     this.translate.setDefaultLang(this.savedLang);
     this.translate.use(this.savedLang);
   }

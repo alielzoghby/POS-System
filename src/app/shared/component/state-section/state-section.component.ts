@@ -10,7 +10,7 @@ import {
 import { SectionStateStatus } from '../../enums/section-state-status.enum';
 import { CommonModule } from '@angular/common';
 import { LoaderComponent } from '../loader/loader.component';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-state-section',
@@ -21,9 +21,9 @@ import { TranslateModule } from '@ngx-translate/core';
 })
 export class StateSectionComponent implements OnInit {
   @Input() state!: SectionStateStatus;
-  @Input() loadingLabel: string = 'Loading';
+  @Input() loadingLabel!: string;
   @Input() errorStateLabel!: string;
-  @Input() emptyStateMainLabel: string = 'No records has been added yet';
+  @Input() emptyStateMainLabel!: string;
   @Input() emptyStateSubLabel!: string;
   @Input() emptyStateImagePath!: string;
 
@@ -32,9 +32,24 @@ export class StateSectionComponent implements OnInit {
 
   SectionStateStatus = SectionStateStatus; // For template usage
 
-  constructor(private comRef: ChangeDetectorRef) {}
+  constructor(
+    private comRef: ChangeDetectorRef,
+    private translateService: TranslateService
+  ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (!this.loadingLabel) {
+      this.translateService.get('LoadingLabel').subscribe((translated) => {
+        this.loadingLabel = translated;
+      });
+    }
+
+    if (!this.emptyStateMainLabel) {
+      this.translateService.get('EmptyStateMainLabel').subscribe((translated) => {
+        this.emptyStateMainLabel = translated;
+      });
+    }
+  }
 
   ngOnChanges({ state }: SimpleChanges): void {
     if (state && state.currentValue !== state.previousValue) {

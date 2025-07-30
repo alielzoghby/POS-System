@@ -1,4 +1,4 @@
-import { HttpClient, provideHttpClient, withFetch } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {
@@ -14,11 +14,15 @@ import { HttpLoaderFactory } from './translate-loader';
 import { JwtHelperService, JwtModule } from '@auth0/angular-jwt';
 import { StorageConstant } from '@/shared/config/storage.constant';
 import { MessageService } from 'primeng/api';
+import { authInterceptor } from '@/shared/interceptors/token.interceptor';
+import { errorInterceptor } from '@/shared/interceptors/error.interceptor';
+import { successInterceptor } from '@/shared/interceptors/success.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     MessageService,
-    provideHttpClient(),
+    JwtHelperService,
+    provideHttpClient(withInterceptors([authInterceptor, successInterceptor, errorInterceptor])),
     importProvidersFrom(
       TranslateModule.forRoot({
         defaultLanguage: 'en',
@@ -27,6 +31,11 @@ export const appConfig: ApplicationConfig = {
           useFactory: HttpLoaderFactory,
           deps: [HttpClient],
         },
+      }),
+      JwtModule.forRoot({
+        config: {
+          tokenGetter: () => localStorage.getItem(StorageConstant.AUTH_USER),
+        },
       })
     ),
     provideRouter(
@@ -34,15 +43,6 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
       withEnabledBlockingInitialNavigation()
     ),
-    importProvidersFrom(
-      JwtModule.forRoot({
-        config: {
-          tokenGetter: () => localStorage.getItem(StorageConstant.AUTH_USER),
-        },
-      })
-    ),
-    JwtHelperService,
-    provideHttpClient(withFetch()),
     provideAnimationsAsync(),
     providePrimeNG({ theme: { preset: Aura, options: { darkModeSelector: '.app-dark' } } }),
   ],

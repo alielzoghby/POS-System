@@ -88,9 +88,8 @@ import { NotificationComponent } from './app.notification';
 
           <app-notification></app-notification>
           <p-splitButton
-            *ngIf="currentUser"
-            [label]="currentUser.userName"
-            (onClick)="goToUserProfile()"
+            [label]="currentUser?.userName"
+            (onClick)="currentUser && goToUserProfile()"
             [model]="items"
             icon="pi pi-fw pi-user"
             class="layout-topbar-splitButton"

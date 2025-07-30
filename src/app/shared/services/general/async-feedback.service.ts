@@ -7,23 +7,23 @@ import { MessageService } from 'primeng/api';
 export class AsyncFeedbackService {
   constructor(private service: MessageService) {}
 
-  showInfoMessage(message: string) {
-    this.service.add({ severity: 'info', summary: 'Info Message', detail: 'PrimeNG rocks' });
+  showInfoMessage(message: string, summary: string = 'Info Message') {
+    this.service.add({ severity: 'info', summary, detail: message });
   }
 
-  showWarnMessage(message: string) {
+  showWarnMessage(message: string, summary: string = 'Warn Message') {
     this.service.add({
       severity: 'warn',
-      summary: 'Warn Message',
-      detail: 'There are unsaved changes',
+      summary,
+      detail: message,
     });
   }
 
-  showErrorMessage(message: string) {
-    this.service.add({ severity: 'error', summary: 'Error Message', detail: 'Validation failed' });
+  showErrorMessage(message: string, summary: string = 'Error Message') {
+    this.service.add({ severity: 'error', summary, detail: message });
   }
 
-  showSuccessMessage(message: string) {
-    this.service.add({ severity: 'success', summary: 'Success Message', detail: 'Message sent' });
+  showSuccessMessage(message: string, summary: string = 'Success Message') {
+    this.service.add({ severity: 'success', summary, detail: message });
   }
 }

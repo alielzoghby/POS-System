@@ -8,12 +8,12 @@ import { PreconditionError } from './precondition-error';
 import { UnauthorizedError } from './unauthorized-error';
 
 export {
-    AppError,
-    BadInputError,
-    ConflictError,
-    IneligibleError,
-    NoDataError,
-    NotFoundError,
-    UnauthorizedError,
-    PreconditionError
+  AppError,
+  BadInputError,
+  ConflictError,
+  IneligibleError,
+  NoDataError,
+  NotFoundError,
+  UnauthorizedError,
+  PreconditionError,
 };

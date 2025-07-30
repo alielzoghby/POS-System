@@ -89,7 +89,7 @@ declare type SurfacesType = {
         </div>
       </div>
       <!-- <div class="flex flex-col gap-2">
-        <span class="text-sm text-muted-color font-semibold">{{'Presets' | translate}}</span>
+        <span class="text-sm text-muted-color font-semibold">{{ 'Presets' | translate }}</span>
         <p-selectbutton
           [options]="presets"
           [ngModel]="selectedPreset()"
@@ -99,7 +99,7 @@ declare type SurfacesType = {
         />
       </div>
       <div *ngIf="showMenuModeButton()" class="flex flex-col gap-2">
-        <span class="text-sm text-muted-color font-semibold">{{'MenuMode' | translate}}</span>
+        <span class="text-sm text-muted-color font-semibold">{{ 'MenuMode' | translate }}</span>
         <p-selectbutton
           [ngModel]="menuMode()"
           (ngModelChange)="onMenuModeChange($event)"

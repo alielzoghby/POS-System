@@ -31,11 +31,11 @@ export const appRoutes: Routes = [
   },
 
   // public landing page (guest only)
-  {
-    path: RoutesUtil.LandingPage.path,
-    component: Landing,
-    // canActivate: [GuestGuard],
-  },
+  //   {
+  //     path: RoutesUtil.LandingPage.path,
+  //     component: Landing,
+  //     canActivate: [GuestGuard],
+  //   },
 
   // auth routes (login, register...) - only if NOT logged in
   {

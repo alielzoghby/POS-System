@@ -1,29 +1,25 @@
-import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpInterceptorFn } from '@angular/common/http';
 import { StorageConstant } from '../config/storage.constant';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const localStorageData = localStorage.getItem(StorageConstant.AUTH_USER)
-      ? JSON.parse(localStorage.getItem(StorageConstant.AUTH_USER) || '')
-      : '';
+export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const localStorageData = localStorage.getItem(StorageConstant.AUTH_USER)
+    ? JSON.parse(localStorage.getItem(StorageConstant.AUTH_USER) || '')
+    : null;
 
-    if (localStorageData) {
-      const { token, language } = localStorageData;
-      let headers = request.headers;
+  if (localStorageData) {
+    const { token, language } = localStorageData;
+    let headers = req.headers;
 
-      if (token) {
-        headers = headers.set('Authorization', `Bearer ${token}`);
-      }
-
-      headers = headers.set('Accept-Language', language);
-
-      const modifiedReq = request.clone({ headers });
-
-      return next.handle(modifiedReq);
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
     }
-    return next.handle(request);
+
+    if (language) {
+      headers = headers.set('Accept-Language', language);
+    }
+
+    req = req.clone({ headers });
   }
-}
+
+  return next(req);
+};

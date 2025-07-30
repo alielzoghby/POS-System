@@ -67,10 +67,9 @@ export class AuthService extends BaseComponent {
   }
 
   updatePassword(body: { email: string; password: string }): Observable<User> {
-    return this.baseAPI.post(ApiConstant.UPDATE_PASSWORD, filterNullEntity(body)).pipe(
-      tap((res) => this.showSuccessMessage(res.responseMessage)),
-      map((res) => this.mapper.fromJson(User, res.data.user))
-    );
+    return this.baseAPI
+      .post(ApiConstant.UPDATE_PASSWORD, filterNullEntity(body))
+      .pipe(map((res) => this.mapper.fromJson(User, res.data.user)));
   }
 
   addUser(body: User): Observable<User> {

@@ -13,6 +13,8 @@ import { RoutesUtil } from '@/shared/utils/routes.util';
 import { SplitButton } from 'primeng/splitbutton';
 import { BaseComponent } from '@/shared/component/base-component/base.component';
 import { NotificationComponent } from './app.notification';
+import { User } from '@/shared/models/user.model';
+import { plainToInstance } from 'class-transformer';
 
 @Component({
   selector: 'app-topbar',
@@ -26,7 +28,7 @@ import { NotificationComponent } from './app.notification';
     SplitButton,
     NotificationComponent,
   ],
-  template: ` <div class="layout-topbar">
+  template: ` <div class="layout-topbar shadow-md">
     <div class="layout-topbar-logo-container">
       <button
         class="layout-menu-button layout-topbar-action"
@@ -81,14 +83,9 @@ import { NotificationComponent } from './app.notification';
 
       <div class="layout-topbar-menu hidden lg:block">
         <div class="layout-topbar-menu-content">
-          <!-- <button type="button" class="layout-topbar-action">
-            <i class="pi pi-calendar"></i>
-            <span>Calendar</span>
-          </button> -->
-
           <app-notification></app-notification>
           <p-splitButton
-            [label]="currentUser?.userName"
+            [label]="currentUser.userName"
             (onClick)="currentUser && goToUserProfile()"
             [model]="items"
             icon="pi pi-fw pi-user"
@@ -106,7 +103,7 @@ import { NotificationComponent } from './app.notification';
 })
 export class AppTopbar extends BaseComponent {
   items!: MenuItem[];
-  currentUser!: any;
+  currentUser!: User;
 
   protected readonly ConfigConstant = ConfigConstant;
 
@@ -117,7 +114,7 @@ export class AppTopbar extends BaseComponent {
     private router: Router
   ) {
     super();
-    this.currentUser = this.authService.currentUser$.value.user;
+    this.currentUser = plainToInstance(User, this.authService.currentUser$.value.user);
     this.generateMenuItems();
   }
 
@@ -139,7 +136,9 @@ export class AppTopbar extends BaseComponent {
   }
 
   goToUserProfile() {
-    this.router.navigate([RoutesUtil.UserProfile.url({ params: { id: this.currentUser._id } })]);
+    this.router.navigate([
+      RoutesUtil.UserProfile.url({ params: { id: this.currentUser.user_id } }),
+    ]);
   }
   toggleDarkMode() {
     this.layoutService.layoutConfig.update((state) => ({ ...state, darkTheme: !state.darkTheme }));

@@ -1,6 +1,5 @@
 import { UserRole } from '../enums/user-role.enum';
 
 export class RolesConstants {
-  //school
-  // public static ROLE_NAME = [UserRole.SuperAdmin];
+  public static ADD_EDIT_USER = [UserRole.Admin];
 }

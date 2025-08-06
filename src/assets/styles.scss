@@ -1,5 +1,12 @@
-/* You can add global styles to this file, and also import other style files */
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
 @use './tailwind.css';
+
+@use '@angular/material' as mat;
+
 @use './layout/layout.scss';
 @use 'primeicons/primeicons.css';
 @use './demo/demo.scss';
@@ -36,6 +43,15 @@
   opacity: 0.5;
 }
 
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
+
 .custom-menu {
   padding: 8px;
 }
@@ -48,4 +64,12 @@
 
 .bg-surface-overlay {
   background-color: var(--surface-overlay);
+}
+
+.border-primary {
+  border-color: var(--primary-color);
+}
+
+.mat-mdc-dialog-surface {
+  background: transparent !important;
 }

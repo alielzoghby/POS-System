@@ -1,8 +1,7 @@
 import { AppError } from './app-error';
 
 export class ConflictError extends AppError {
-
-  type = "";
+  type = '';
   id!: number;
 
   constructor(errors?: string[]) {
@@ -10,7 +9,6 @@ export class ConflictError extends AppError {
     if (errors && errors.length > 0) {
       this.checkErrorsInfo();
     }
-
   }
 
   private checkErrorsInfo() {
@@ -19,7 +17,7 @@ export class ConflictError extends AppError {
       if (error.indexOf('type:') > -1) {
         let errorStringArray = error.split(':');
         if (errorStringArray.length > 1) {
-          this.type = errorStringArray[1].trim()
+          this.type = errorStringArray[1].trim();
         }
       }
 
@@ -29,9 +27,6 @@ export class ConflictError extends AppError {
           this.id = parseInt(errorStringArray[1].trim(), 10);
         }
       }
-
     }
-
   }
-
 }

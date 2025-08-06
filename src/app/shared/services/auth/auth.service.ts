@@ -66,34 +66,8 @@ export class AuthService extends BaseComponent {
     );
   }
 
-  updatePassword(body: { email: string; password: string }): Observable<User> {
-    return this.baseAPI
-      .post(ApiConstant.UPDATE_PASSWORD, filterNullEntity(body))
-      .pipe(map((res) => this.mapper.fromJson(User, res.data.user)));
-  }
-
-  addUser(body: User): Observable<User> {
-    return this.baseAPI
-      .post(ApiConstant.ADD_USER, filterNullEntity(body))
-      .pipe(map((res) => this.mapper.fromJson(User, res.data.user)));
-  }
-
   private saveTokenAndUpdateUser(user: AuthResponse): void {
     this.jwtDecoderService.saveToken(user?.toJson!());
     this.currentUser$.next(this.jwtDecoderService.getCurrentUserFromJWTToken());
-  }
-
-  getAllNotifications(): Observable<any> {
-    return this.baseAPI.get(ApiConstant.GET_ALL_NOTIFICATIONS).pipe(map((res) => res.data));
-  }
-
-  getNotificationById(id: string): Observable<Notification> {
-    return this.baseAPI
-      .get(ApiConstant.GET_NOTIFICATION_BY_ID.replace('{id}', id))
-      .pipe(map((res) => this.mapper.fromJson(Notification, res.data.notification)));
-  }
-
-  markAllAsRead(): Observable<any> {
-    return this.baseAPI.patch(ApiConstant.MARK_ALL_AS_READ, {}).pipe(map((res) => res.data));
   }
 }

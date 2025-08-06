@@ -4,6 +4,9 @@ import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
 import { AppMenuitem } from './app.menuitem';
 import { BaseComponent } from '@/shared/component/base-component/base.component';
+import { RoutesUtil } from '@/shared/utils/routes.util';
+import { UserRoleService } from '@/shared/services/auth/user-role.service';
+import { RolesConstants } from '@/shared/config/roles-constants';
 
 @Component({
   selector: 'app-menu',
@@ -19,13 +22,22 @@ import { BaseComponent } from '@/shared/component/base-component/base.component'
 export class AppMenu extends BaseComponent {
   model: MenuItem[] = [];
 
+  constructor(private userRoleService: UserRoleService) {
+    super();
+  }
+
   ngOnInit() {
     this.model = [
       {
-        label: this.translate('Home'),
-        items: [
-          { label: this.translate('Dashboard'), icon: 'pi pi-fw pi-home', routerLink: ['/'] },
-        ],
+        label: this.translate('Dashboard'),
+        icon: 'pi pi-fw pi-home',
+        routerLink: [RoutesUtil.Dashboard.url()],
+      },
+      {
+        label: this.translate('Users'),
+        icon: 'pi pi-users',
+        routerLink: [RoutesUtil.UserList.url()],
+        visible: this.userRoleService.isUserHasRoles(RolesConstants.ADD_EDIT_USER),
       },
     ];
   }

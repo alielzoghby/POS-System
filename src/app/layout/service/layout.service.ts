@@ -88,7 +88,7 @@ export class LayoutService {
       this.layoutConfig.set(this._config);
     }
 
-    // this.onMenuToggle();
+    this.onMenuToggle();
 
     effect(() => {
       const config = this.layoutConfig();

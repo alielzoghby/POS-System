@@ -8,5 +8,5 @@ export class ConfigConstant {
   public static DEFAULT_LANGUAGE = 'en';
   static MAX_FILE_SIZE = 10 * 1024 * 1024;
   public static ACCESS_DENIED = 'access-denied';
-  public static ROWS_PER_PAGE_OPTIONS = [2, 5, 10];
+  public static ROWS_PER_PAGE_OPTIONS = [2, 5, 10, 20, 30];
 }

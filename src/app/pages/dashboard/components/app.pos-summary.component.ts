@@ -61,11 +61,13 @@ import { HttpClient } from '@angular/common/http';
               <button
                 pButton
                 type="button"
+                label="{{ 'POS.VALIDATE' | translate }}"
+                icon="pi pi-search"
                 class="p-button p-button-primary rounded-lg"
+                [loading]="loading"
+                iconPos="right"
                 (click)="verifyVoucher()"
-              >
-                {{ 'POS.VALIDATE' | translate }}
-              </button>
+              ></button>
             </div>
             <div *ngIf="voucherDiscount > 0" class="text-green-700 font-bold text-lg">
               {{ 'POS.VOUCHER_DISCOUNT' | translate }}: -{{ voucherDiscount | currency: 'USD' }}
@@ -140,6 +142,7 @@ export class PosSummaryComponent {
 
   tipOptions = [0, 5, 10, 15, 20];
   selectedTip = 0;
+  loading = false;
 
   paymentMethods: { label: string; value: 'cash' | 'card' | 'voucher' }[] = [
     { label: 'POS.PAYMENT_CASH', value: 'cash' },

@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { Access } from './access';
-import { LoginComponent } from './login';
+import { Access } from './component/access';
+import { LoginComponent } from './component/login';
 import { RoutesUtil } from '@/shared/utils/routes.util';
 
 export default [

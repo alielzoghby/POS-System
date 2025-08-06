@@ -8,7 +8,9 @@ import { PosProductTableComponent } from './components/app.pos-products-table.co
   template: `
     <div class="grid grid-cols-12 gap-8 h-full">
       <!-- Products Table Section -->
-      <div class="col-span-12 xl:col-span-8 lg:overflow-hidden">
+      <div class="col-span-12 xl:col-span-8 lg:overflow-hidden" style="padding: 6px; margin: -6px">
+        <!-- margin and padding to fix shadow issue doesn't visible because of overflow -->
+
         <app-pos-product-table
           [products]="products"
           (productRemoved)="removeProduct($event)"

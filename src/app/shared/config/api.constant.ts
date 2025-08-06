@@ -5,11 +5,10 @@ export class ApiConstant {
   static URL_BASE = environment.base_url + environment.api_prefix;
   static LOGIN = ApiConstant.URL_BASE + URLSegment.Auth + 'login';
 
-  static UPDATE_PASSWORD =
-    ApiConstant.URL_BASE + URLSegment.User + URLSegment.Auth + 'add-password';
-  static ADD_USER = ApiConstant.URL_BASE + URLSegment.User + 'register';
-  static UPDATE_USER = ApiConstant.URL_BASE + URLSegment.User;
-  static RESET_PASSWORD = ApiConstant.URL_BASE + URLSegment.User + 'update-password';
+  static GET_USER = ApiConstant.URL_BASE + URLSegment.Users + '{id}';
+  static GET_USERS = ApiConstant.URL_BASE + URLSegment.Users;
+  static ADD_USER = ApiConstant.URL_BASE + URLSegment.Users;
+  static UPDATE_USER = ApiConstant.URL_BASE + URLSegment.Users + '{id}';
 
   static GET_LOOKUP = ApiConstant.URL_BASE + URLSegment.Lookups + '{type}';
 

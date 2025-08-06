@@ -23,10 +23,7 @@ export const appRoutes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: RoutesUtil.Dashboard.path, component: Dashboard },
-      //   {
-      //     path: RoutesUtil.User.path,
-      //     loadChildren: () => import('./app/pages/user/user.routes'),
-      //   },
+      { path: RoutesUtil.User.path, loadChildren: () => import('./app/pages/user/user.routes') },
     ],
   },
 

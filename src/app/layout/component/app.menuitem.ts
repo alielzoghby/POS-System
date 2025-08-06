@@ -15,7 +15,10 @@ import { LayoutService } from '../service/layout.service';
   template: `
     <ng-container>
       <div *ngIf="root && item.visible !== false" class="layout-menuitem-root-text">
-        {{ item.label }}
+        <span *ngIf="item.items">{{ item.label }}</span>
+        <div *ngIf="!item.items" class="layout-menuitem">
+          <ng-container [ngTemplateOutlet]="menuItem"></ng-container>
+        </div>
       </div>
       <a
         *ngIf="(!item.routerLink || item.items) && item.visible !== false"
@@ -30,8 +33,26 @@ import { LayoutService } from '../service/layout.service';
         <span class="layout-menuitem-text">{{ item.label }}</span>
         <i class="pi pi-fw pi-angle-down layout-submenu-toggler" *ngIf="item.items"></i>
       </a>
-      <a
+      <ng-container
         *ngIf="item.routerLink && !item.items && item.visible !== false"
+        [ngTemplateOutlet]="menuItem"
+      ></ng-container>
+
+      <ul *ngIf="item.items && item.visible !== false" [@children]="submenuAnimation">
+        <ng-template ngFor let-child let-i="index" [ngForOf]="item.items">
+          <li
+            app-menuitem
+            [item]="child"
+            [index]="i"
+            [parentKey]="key"
+            [class]="child['badgeClass']"
+          ></li>
+        </ng-template>
+      </ul>
+    </ng-container>
+
+    <ng-template #menuItem>
+      <a
         (click)="itemClick($event)"
         [ngClass]="item.styleClass"
         [routerLink]="item.routerLink"
@@ -59,19 +80,7 @@ import { LayoutService } from '../service/layout.service';
         <span class="layout-menuitem-text">{{ item.label }}</span>
         <i class="pi pi-fw pi-angle-down layout-submenu-toggler" *ngIf="item.items"></i>
       </a>
-
-      <ul *ngIf="item.items && item.visible !== false" [@children]="submenuAnimation">
-        <ng-template ngFor let-child let-i="index" [ngForOf]="item.items">
-          <li
-            app-menuitem
-            [item]="child"
-            [index]="i"
-            [parentKey]="key"
-            [class]="child['badgeClass']"
-          ></li>
-        </ng-template>
-      </ul>
-    </ng-container>
+    </ng-template>
   `,
   animations: [
     trigger('children', [

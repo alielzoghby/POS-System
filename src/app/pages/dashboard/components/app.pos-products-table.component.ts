@@ -37,11 +37,13 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
         />
         <button
           pButton
+          type="button"
+          label="{{ 'POS.ADD' | translate }}"
+          icon="pi pi-search"
           class="p-button-success w-[200px] h-[60px] px-6 rounded-lg"
+          [loading]="loading"
           (click)="searchProductByBarcode()"
-        >
-          {{ 'POS.ADD' | translate }}
-        </button>
+        ></button>
       </div>
 
       <!-- Products Table -->
@@ -109,6 +111,8 @@ export class PosProductTableComponent {
 
   barcode: string = '';
 
+  loading = false;
+
   constructor(private http: HttpClient) {}
 
   removeProduct(index: number) {
@@ -137,11 +141,9 @@ export class PosProductTableComponent {
           this.productUpdated.emit();
           this.barcode = '';
 
-          // ✅ صوت نجاح
           new Audio('assets/success.mp3').play();
         },
         error: () => {
-          // ❌ صوت فشل
           new Audio('assets/fail.mp3').play();
         },
       });

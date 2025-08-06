@@ -5,6 +5,7 @@ export class RoutesUtil {
 
   // static Auth = new RouteConfig('auth');
   static Auth = new RouteConfig('auth');
+
   static AuthLogin = new RouteConfig('login', RoutesUtil.Auth);
   static AuthError = new RouteConfig('error', RoutesUtil.Auth);
   static AuthRegister = new RouteConfig('register', RoutesUtil.Auth);

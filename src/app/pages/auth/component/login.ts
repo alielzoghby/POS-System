@@ -12,7 +12,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
-import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
+import { AppFloatingConfigurator } from '../../../layout/component/app.floatingconfigurator';
 import { ConfigConstant } from '@/shared/config/config.constant';
 import { TranslateModule } from '@ngx-translate/core';
 import { BaseComponent } from '@/shared/component/base-component/base.component';
@@ -22,6 +22,8 @@ import { RoutesUtil } from '@/shared/utils/routes.util';
 import { MessageModule } from 'primeng/message';
 import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
+import { isFieldInvalid } from '@/shared/utils/form-helper.util';
+import { ValidationErrorsComponent } from '@/shared/component/validation-errors/validation-errors.component';
 
 @Component({
   selector: 'app-login',
@@ -40,6 +42,7 @@ import { MessageService } from 'primeng/api';
     StateSectionComponent,
     MessageModule,
     CommonModule,
+    ValidationErrorsComponent,
   ],
   template: `
     <app-state-section [state]="sectionState">
@@ -88,11 +91,10 @@ import { MessageService } from 'primeng/api';
                     formControlName="email"
                   />
 
-                  <p-message
-                    *ngIf="isFieldInvalid(loginForm, 'email')"
-                    severity="error"
-                    text="{{ 'EmailRequired' | translate }}"
-                  ></p-message>
+                  <app-validation-errors
+                    [control]="loginForm.get('email')"
+                    [formGroup]="loginForm"
+                  ></app-validation-errors>
                 </div>
 
                 <div class="mb-8 flex flex-col gap-2">
@@ -111,11 +113,10 @@ import { MessageService } from 'primeng/api';
                     [feedback]="false"
                   ></p-password>
 
-                  <p-message
-                    *ngIf="isFieldInvalid(loginForm, 'password')"
-                    severity="error"
-                    text="{{ 'EmailRequired' | translate }}"
-                  ></p-message>
+                  <app-validation-errors
+                    [control]="loginForm.get('password')"
+                    [formGroup]="loginForm"
+                  ></app-validation-errors>
                 </div>
 
                 <div class="flex items-center justify-between mt-2 mb-8 gap-8">
@@ -150,6 +151,7 @@ import { MessageService } from 'primeng/api';
 })
 export class LoginComponent extends BaseComponent implements OnInit {
   protected readonly ConfigConstant = ConfigConstant;
+  protected readonly isFieldInvalid = isFieldInvalid;
 
   loginForm!: FormGroup;
   constructor(
@@ -170,10 +172,6 @@ export class LoginComponent extends BaseComponent implements OnInit {
       password: ['', Validators.required],
       rememberMe: [false],
     });
-  }
-
-  isFieldInvalid(form: FormGroup, field: string): boolean | undefined {
-    return form.get(field)?.invalid && (form.get(field)?.touched || form.get(field)?.dirty);
   }
 
   onSubmitLogin() {

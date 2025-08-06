@@ -8,7 +8,7 @@ export const successInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     tap((event) => {
-      if (event instanceof HttpResponse && event.status === 200) {
+      if (event instanceof HttpResponse && (event.status === 200 || event.status === 201)) {
         const msg = (event.body as { message?: string })?.message;
 
         if (msg) {

@@ -29,6 +29,7 @@
   "GoToDashboard": "Go to Dashboard",
   "PageNotFound": "Page Not Found",
   "NotFoundMessage": "The requested resource is not available.",
+  "EmailRequired": "Email is required",
   "POS": {
     "ADD_TIP": "Add Tip",
     "PAYMENT_METHOD": "Payment Method",
@@ -60,5 +61,43 @@
     "ADD": "Add",
     "ENTER_BARCODE": "Enter Barcode"
   },
-  "EmailRequired": "Email is required"
+  "profile": {
+    "editProfile": "Edit Profile",
+    "changePassword": "Change Password",
+    "role": "Role",
+    "email": "Email",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "password": "Password",
+    "oldPassword": "Old Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "passwordsMismatch": "Passwords do not match"
+  },
+  "user": {
+    "users": "Users",
+    "newUser": "New User",
+    "userName": "User Name",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "role": "Role",
+    "password": "Password",
+    "create": "Create User",
+    "ADMIN": "Admin",
+    "CASHIER": "Cashier"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "actions": "Actions",
+    "details": "Details",
+    "edit": "Edit"
+  },
+  "formErrors": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "minlength": "Minimum length is {{requiredLength}} characters",
+    "passwordMismatch": "Passwords do not match"
+  }
 }

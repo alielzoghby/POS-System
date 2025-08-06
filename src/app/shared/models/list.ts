@@ -1,6 +1,6 @@
-import { Expose } from "class-transformer"
+import { Expose } from 'class-transformer';
 
-export class list {
+export class Pagination {
   @Expose()
   totalPages?: number;
 
@@ -15,4 +15,13 @@ export class list {
 
   @Expose()
   skip?: number;
+
+  @Expose()
+  hasNextPage?: boolean;
+
+  @Expose()
+  hasPrevPage?: boolean;
+
+  @Expose()
+  totalUsers?: number;
 }

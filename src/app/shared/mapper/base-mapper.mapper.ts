@@ -1,4 +1,4 @@
-import { plainToClass } from 'class-transformer';
+import { plainToInstance } from 'class-transformer';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 })
 export class Mapper {
   fromJson(model: any, element: any): typeof model | (typeof model)[] {
-    return plainToClass(model, element, {
+    return plainToInstance(model, element, {
       excludeExtraneousValues: true,
     });
   }

@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
 import { AppLayout } from './app/layout/component/app.layout';
-import { Dashboard } from './app/pages/dashboard/dashboard';
-import { Landing } from './app/pages/landing/landing';
+import { Dashboard } from './app/pages/dashboard/pages/dashboard';
 import { Notfound } from './app/pages/notfound/notfound';
 
 import { RoutesUtil } from '@/shared/utils/routes.util';
 import { AuthGuard } from '@/shared/guards/auth.guard';
 import { GuestGuard } from '@/shared/guards/guest.guard';
 import { WildcardRedirectGuard } from '@/shared/guards/wildcard-redirect.guard';
+import { Landing } from '@/pages/landing/pages/landing';
 
 export const appRoutes: Routes = [
   {
@@ -27,12 +27,12 @@ export const appRoutes: Routes = [
     ],
   },
 
-  // public landing page (guest only)
-  //   {
-  //     path: RoutesUtil.LandingPage.path,
-  //     component: Landing,
-  //     canActivate: [GuestGuard],
-  //   },
+  //   public landing page (guest only)
+  // {
+  //   path: RoutesUtil.LandingPage.path,
+  //   component: Landing,
+  //   canActivate: [GuestGuard],
+  // },
 
   // auth routes (login, register...) - only if NOT logged in
   {

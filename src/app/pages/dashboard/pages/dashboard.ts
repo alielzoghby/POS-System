@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { PosSummaryComponent } from './components/app.pos-summary.component';
-import { PosProductTableComponent } from './components/app.pos-products-table.component';
+import { PosSummaryComponent } from '../components/app.pos-summary.component';
+import { PosProductTableComponent } from '../components/app.pos-products-table.component';
 
 @Component({
   selector: 'app-dashboard',

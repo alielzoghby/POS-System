@@ -10,7 +10,7 @@ import { User } from '@/shared/models/user.model';
 import { Button } from 'primeng/button';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { EditProfileDialogComponent } from './edit-profile-dialog.component';
+import { EditProfileDialogComponent } from '../component/edit-profile-dialog.component';
 
 @Component({
   selector: 'app-profile',

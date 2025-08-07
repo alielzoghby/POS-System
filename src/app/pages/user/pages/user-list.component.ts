@@ -10,12 +10,12 @@ import { BaseComponent } from '@/shared/component/base-component/base.component'
 import { Pagination } from '@/shared/models/list';
 import { SplitButton } from 'primeng/splitbutton';
 import { MenuItem } from 'primeng/api';
-import { EditProfileDialogComponent } from './edit-profile-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { RoutesUtil } from '@/shared/utils/routes.util';
 import { StateSectionComponent } from '@/shared/component/state-section/state-section.component';
 import { Button } from 'primeng/button';
-import { CreateUserDialogComponent } from './create-user-dialog.component';
+import { EditProfileDialogComponent } from '../component/edit-profile-dialog.component';
+import { CreateUserDialogComponent } from '../component/create-user-dialog.component';
 
 @Component({
   selector: 'app-user-list',
@@ -46,7 +46,7 @@ import { CreateUserDialogComponent } from './create-user-dialog.component';
           [paginator]="true"
           [rows]="rows"
           [totalRecords]="pagination.totalUsers || 0"
-          [first]="((pagination?.currentPage ?? 1) - 1) * rows"
+          [first]="((pagination.currentPage ?? 1) - 1) * rows"
           [rowsPerPageOptions]="[5, 10, 20]"
           [responsiveLayout]="'scroll'"
           [lazy]="true"

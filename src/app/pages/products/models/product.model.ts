@@ -10,46 +10,49 @@ export enum ProductStatus {
 
 export class ProductModel {
   @Expose()
-  product_id!: string;
+  product_id?: string;
 
   @Expose()
-  image!: string;
+  image?: string;
 
   @Expose()
-  name!: string;
+  name?: string;
 
   @Expose()
-  reference!: string;
+  reference?: string;
 
   @Expose()
-  lot!: string;
+  lot?: string;
 
   @Expose()
-  category!: CategoryModel;
+  category?: CategoryModel;
 
   @Expose()
-  category_id!: CategoryModel;
+  category_id?: CategoryModel;
 
   @Expose()
-  base_price!: number;
+  base_price?: number;
 
   @Expose()
-  final_price!: number;
+  final_price?: number;
 
   @Expose()
-  quantity!: number;
+  quantity?: number;
 
   @Expose()
-  status!: ProductStatus;
+  status?: ProductStatus;
 
   @Expose()
-  expiration_date!: string;
+  expiration_date?: string;
+
+  @Expose()
+  price?: number;
 }
 
 export class ProductListModel {
   @Expose()
-  products!: ProductModel[];
+  products?: ProductModel[];
 
   @Expose()
-  pagination!: Pagination;
+  pagination?: Pagination;
 }

@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { PosSummaryComponent } from '../components/app.pos-summary.component';
 import { PosProductTableComponent } from '../components/app.pos-products-table.component';
+import { ProductModel } from '@/pages/products/models/product.model';
+import { BaseComponent } from '@/shared/component/base-component/base.component';
+import { OrderModel } from '../model/order.model';
+import { OrderService } from '../services/order.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,33 +33,28 @@ import { PosProductTableComponent } from '../components/app.pos-products-table.c
     </div>
   `,
 })
-export class Dashboard {
-  products = [
-    { name: 'Cappuccino', unitPrice: 4.5, quantity: 2 },
-    { name: 'Cheeseburger', unitPrice: 8.0, quantity: 1 },
-    { name: 'Chocolate Cake', unitPrice: 5.5, quantity: 1 },
-    { name: 'Cappuccino', unitPrice: 4.5, quantity: 2 },
-    { name: 'Cheeseburger', unitPrice: 8.0, quantity: 1 },
-    { name: 'Chocolate Cake', unitPrice: 5.5, quantity: 1 },
-    { name: 'Cappuccino', unitPrice: 4.5, quantity: 2 },
-    { name: 'Cheeseburger', unitPrice: 8.0, quantity: 1 },
-    { name: 'Chocolate Cake', unitPrice: 5.5, quantity: 1 },
-    { name: 'Cappuccino', unitPrice: 4.5, quantity: 2 },
-    { name: 'Cheeseburger', unitPrice: 8.0, quantity: 1 },
-    { name: 'Chocolate Cake', unitPrice: 5.5, quantity: 1 },
-    { name: 'Cappuccino', unitPrice: 4.5, quantity: 2 },
-    { name: 'Cheeseburger', unitPrice: 8.0, quantity: 1 },
-    { name: 'Chocolate Cake', unitPrice: 5.5, quantity: 1 },
-  ];
-
+export class Dashboard extends BaseComponent {
+  products: ProductModel[] = [];
   subtotal = 0;
+
+  constructor(private orderService: OrderService) {
+    super();
+  }
 
   ngOnInit() {
     this.calculateTotals();
   }
 
   calculateTotals() {
-    this.subtotal = this.products.reduce((acc, item) => acc + item.unitPrice * item.quantity, 0);
+    this.subtotal = this.products.reduce(
+      (acc, item) => acc + (item.price || 0) * (item.quantity || 0),
+      0
+    );
+
+    this.subtotal = this.products.reduce(
+      (acc, item) => acc + (item.price || 0) * (item.quantity || 0),
+      0
+    );
   }
 
   removeProduct(index: number) {
@@ -64,7 +63,14 @@ export class Dashboard {
   }
 
   handleCheckout(event: any) {
-    console.log('Checkout:', event);
-    // send to BE or show confirmation
+    const order: OrderModel = {
+      client_id: 1,
+      reference: 'REF123',
+      products: this.products,
+    };
+
+    this.orderService.createOrder(order).subscribe((response) => {
+      console.log('Order created successfully:', response);
+    });
   }
 }

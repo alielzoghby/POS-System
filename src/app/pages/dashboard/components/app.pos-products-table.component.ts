@@ -7,6 +7,11 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
+import { ProductService } from '@/pages/products/services/product.service';
+import { BaseComponent } from '@/shared/component/base-component/base.component';
+import { ProductListModel, ProductModel } from '@/pages/products/models/product.model';
+import { Popover } from 'primeng/popover';
 
 @Component({
   selector: 'app-pos-product-table',
@@ -20,21 +25,23 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
     InputTextModule,
     HttpClientModule,
     TranslateModule,
+    Popover,
   ],
   template: `
     <div
       class="bg-surface-overlay rounded-xl shadow-md h-full w-full flex flex-col overflow-hidden p-4"
     >
       <!-- Barcode Input -->
-      <div class="mb-4 flex gap-4 items-center">
+      <div class="mb-4 flex gap-4 items-center relative">
         <input
           type="text"
           pInputText
           class="text-xl p-3 border-2 h-[60px] rounded-lg w-full"
           [(ngModel)]="barcode"
-          (keydown.enter)="searchProductByBarcode()"
+          (input)="onSearchInput($event, pop)"
           placeholder="{{ 'POS.ENTER_BARCODE' | translate }}"
         />
+
         <button
           pButton
           type="button"
@@ -42,8 +49,26 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
           icon="pi pi-search"
           class="p-button-success w-[200px] h-[60px] px-6 rounded-lg"
           [loading]="loading"
-          (click)="searchProductByBarcode()"
+          (click)="onSearchInput(barcode, pop)"
         ></button>
+
+        <!-- Product Search Popover -->
+        <p-popover #pop>
+          <div *ngIf="searchData?.products?.length; else noResults">
+            <ul class="list-none m-0 p-0 w-[250px]">
+              <li
+                *ngFor="let p of searchData.products"
+                (click)="selectProduct(p, pop)"
+                class="p-2 hover:bg-gray-100 cursor-pointer"
+              >
+                {{ p.name }} - {{ p.final_price | currency }}
+              </li>
+            </ul>
+          </div>
+          <ng-template #noResults>
+            <div class="p-2 text-gray-500">{{ 'No products found' }}</div>
+          </ng-template>
+        </p-popover>
       </div>
 
       <!-- Products Table -->
@@ -72,7 +97,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
               [ngClass]="i % 2 === 0 ? 'bg-white' : 'bg-gray-100'"
             >
               <td class="py-4 px-3">{{ product.name }}</td>
-              <td class="py-4 px-3">{{ product.unitPrice | currency: 'USD' }}</td>
+              <td class="py-4 px-3">{{ product.price | currency: 'USD' }}</td>
               <td class="py-4 px-3">
                 <p-inputNumber
                   [(ngModel)]="product.quantity"
@@ -86,7 +111,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
                 ></p-inputNumber>
               </td>
               <td class="py-4 px-3 font-semibold w-[200px]">
-                {{ product.quantity * product.unitPrice | currency: 'USD' }}
+                {{ product.quantity * product.price | currency: 'USD' }}
               </td>
               <td class="py-4 px-3">
                 <button
@@ -104,16 +129,37 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
     </div>
   `,
 })
-export class PosProductTableComponent {
-  @Input() products: { name: string; unitPrice: number; quantity: number }[] = [];
+export class PosProductTableComponent extends BaseComponent {
+  @Input() products: ProductModel[] = [];
   @Output() productRemoved = new EventEmitter<number>();
   @Output() productUpdated = new EventEmitter<void>();
 
+  searchData!: ProductListModel;
   barcode: string = '';
 
   loading = false;
+  popVisible = false;
+  searchSubject = new Subject<string>();
 
-  constructor(private http: HttpClient) {}
+  constructor(private productService: ProductService) {
+    super();
+    this.searchSubject
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((searchTerm) =>
+          this.productService.getProducts({
+            limit: 1000,
+            reference: searchTerm,
+            page: this.pageIndex,
+          })
+        )
+      )
+      .subscribe((res) => {
+        this.popVisible = false;
+        this.searchData = res;
+      });
+  }
 
   removeProduct(index: number) {
     this.productRemoved.emit(index);
@@ -123,29 +169,29 @@ export class PosProductTableComponent {
     this.productUpdated.emit();
   }
 
-  searchProductByBarcode() {
-    const trimmed = this.barcode.trim();
-    if (!trimmed) return;
+  onSearchInput(event: any, pop: Popover) {
+    const value = event.target.value.trim();
+    if (value) {
+      this.searchSubject.next(value);
+      if (!this.popVisible) {
+        pop.show(event);
+        this.popVisible = true;
+      }
+    } else {
+      pop.hide();
+      this.popVisible = false;
+    }
+  }
+  selectProduct(product: ProductModel, pop: Popover) {
+    this.products.push({
+      product_id: product.product_id,
+      name: product.name,
+      price: product.final_price,
+      quantity: 1,
+    });
 
-    this.http
-      .get<{ name: string; unitPrice: number }>(`/api/products/barcode/${trimmed}`)
-      .subscribe({
-        next: (product) => {
-          const existing = this.products.find((p) => p.name === product.name);
-          if (existing) {
-            existing.quantity += 1;
-          } else {
-            this.products.push({ ...product, quantity: 1 });
-          }
-
-          this.productUpdated.emit();
-          this.barcode = '';
-
-          new Audio('assets/success.mp3').play();
-        },
-        error: () => {
-          new Audio('assets/fail.mp3').play();
-        },
-      });
+    this.productUpdated.emit();
+    pop.hide();
+    this.barcode = '';
   }
 }

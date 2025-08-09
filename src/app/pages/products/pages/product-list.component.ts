@@ -18,6 +18,8 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Tooltip } from 'primeng/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { ProductDialogComponent } from '../component/product-dialog.component';
+import { D } from 'node_modules/@angular/cdk/bidi-module.d-IN1Vp56w';
+import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
@@ -124,7 +126,7 @@ import { ProductDialogComponent } from '../component/product-dialog.component';
                 <img
                   [src]="product.image"
                   [alt]="product.name"
-                  style="width: 64px"
+                  style="width: 64px ; height: 64px"
                   class="rounded"
                 />
               </td>
@@ -136,6 +138,7 @@ import { ProductDialogComponent } from '../component/product-dialog.component';
                 <p-tag
                   [value]="'product.' + product.status | translate"
                   [severity]="getStatusSeverity(product.status)"
+                  class="text-nowrap"
                 ></p-tag>
               </td>
               <td>{{ product.expiration_date | date: 'dd/MM/yyyy' }}</td>
@@ -168,12 +171,29 @@ export class ProductListComponent extends BaseComponent {
   products!: ProductModel[];
   selectedProducts: ProductModel[] = [];
   globalFilterValue: string = '';
+  searchSubject = new Subject<string>();
 
   constructor(
     private productService: ProductService,
     private dialog: MatDialog
   ) {
     super();
+    this.searchSubject
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        switchMap((searchTerm) =>
+          this.productService.getProducts({
+            limit: this.pageSize,
+            reference: searchTerm,
+            page: this.pageIndex,
+          })
+        )
+      )
+      .subscribe((res) => {
+        this.products = res.products || [];
+        this.pagination = res.pagination || {};
+      });
   }
 
   getStatusSeverity(status: ProductStatus): string {
@@ -192,7 +212,7 @@ export class ProductListComponent extends BaseComponent {
   onGlobalFilter(table: any, event: Event) {
     const input = event.target as HTMLInputElement;
     this.globalFilterValue = input.value;
-    table.filterGlobal(this.globalFilterValue, 'contains');
+    this.searchSubject.next(this.globalFilterValue);
   }
 
   onPageChange(event: any): void {
@@ -203,11 +223,11 @@ export class ProductListComponent extends BaseComponent {
   }
 
   getProducts(page: number = this.pageIndex, limit: number = this.pageSize): void {
-    this.load(this.productService.getProducts({ page, limit }), {
+    this.load(this.productService.getProducts({ page, limit, reference: this.globalFilterValue }), {
       isLoadingTransparent: true,
     }).subscribe((res) => {
-      this.products = res.products;
-      this.pagination = res.pagination;
+      this.products = res.products || [];
+      this.pagination = res.pagination || {};
     });
   }
 
@@ -234,7 +254,7 @@ export class ProductListComponent extends BaseComponent {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.load(this.productService.updateProduct(product.product_id, result)).subscribe(
+        this.load(this.productService.updateProduct(product.product_id || '', result)).subscribe(
           (updatedProduct) => {
             const index = this.products.findIndex(
               (p) => p.product_id === updatedProduct.product_id
@@ -249,7 +269,7 @@ export class ProductListComponent extends BaseComponent {
   }
 
   deleteProduct(product: ProductModel) {
-    this.load(this.productService.deleteProduct([product.product_id])).subscribe(() => {
+    this.load(this.productService.deleteProduct([product.product_id || ''])).subscribe(() => {
       this.products = this.products.filter((p) => p.product_id !== product.product_id);
       this.selectedProducts = this.selectedProducts.filter(
         (p) => p.product_id !== product.product_id
@@ -258,6 +278,12 @@ export class ProductListComponent extends BaseComponent {
   }
 
   deleteSelectedProducts() {
-    console.log('Delete selected products', this.selectedProducts);
+    if (this.selectedProducts.length === 0) return;
+
+    const productIds = this.selectedProducts.map((p) => p.product_id || '');
+    this.load(this.productService.deleteProduct(productIds)).subscribe(() => {
+      this.products = this.products.filter((p) => !productIds.includes(p.product_id || ''));
+      this.selectedProducts = [];
+    });
   }
 }

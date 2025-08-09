@@ -48,7 +48,7 @@ import { ValidationErrorsComponent } from '@/shared/component/validation-errors/
     <app-state-section [state]="sectionState">
       <app-floating-configurator />
       <div
-        class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-screen overflow-hidden"
+        class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center h-screen overflow-hidden w-full"
       >
         <div class="flex flex-col items-center justify-center">
           <div

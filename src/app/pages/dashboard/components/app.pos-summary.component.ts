@@ -25,7 +25,7 @@ import { HttpClient } from '@angular/common/http';
               [class.p-button-success]="selectedTip === t"
               (click)="selectTip(t)"
             >
-              {{ t | currency: 'USD' }}
+              {{ t | currency }}
             </button>
           </div>
         </div>
@@ -70,7 +70,7 @@ import { HttpClient } from '@angular/common/http';
               ></button>
             </div>
             <div *ngIf="voucherDiscount > 0" class="text-green-700 font-bold text-lg">
-              {{ 'POS.VOUCHER_DISCOUNT' | translate }}: -{{ voucherDiscount | currency: 'USD' }}
+              {{ 'POS.VOUCHER_DISCOUNT' | translate }}: -{{ voucherDiscount | currency }}
             </div>
             <div *ngIf="voucherInvalid" class="text-red-500 text-lg font-medium">
               {{ 'POS.INVALID_VOUCHER' | translate }}
@@ -94,19 +94,19 @@ import { HttpClient } from '@angular/common/http';
         <!-- Totals Section -->
         <div class="grid grid-cols-2 gap-2 border-t border-gray-300 pt-6 mt-3 text-xl font-medium">
           <div>{{ 'POS.SUBTOTAL' | translate }}</div>
-          <div>{{ subtotal | currency: 'USD' }}</div>
+          <div>{{ subtotal | currency }}</div>
           <div>{{ 'POS.TIP' | translate }}</div>
-          <div>{{ selectedTip | currency: 'USD' }}</div>
+          <div>{{ selectedTip | currency }}</div>
           <div>{{ 'POS.TAX' | translate }}</div>
-          <div>{{ taxAmount | currency: 'USD' }}</div>
+          <div>{{ taxAmount | currency }}</div>
           <div *ngIf="voucherDiscount > 0" class="text-green-600">
             {{ 'POS.VOUCHER_DISCOUNT' | translate }}
           </div>
           <div *ngIf="voucherDiscount > 0" class="text-green-600">
-            -{{ voucherDiscount | currency: 'USD' }}
+            -{{ voucherDiscount | currency }}
           </div>
           <div class="font-bold text-2xl">{{ 'POS.TOTAL' | translate }}</div>
-          <div class="font-bold text-2xl text-red-700">{{ total | currency: 'USD' }}</div>
+          <div class="font-bold text-2xl text-red-700">{{ total | currency }}</div>
         </div>
 
         <!-- Payment -->
@@ -119,7 +119,7 @@ import { HttpClient } from '@angular/common/http';
             class="text-xl p-4 border-2 rounded-xl"
           />
           <label class="font-semibold">{{ 'POS.CHANGE' | translate }}</label>
-          <div class="text-green-700 font-bold">{{ change | currency: 'USD' }}</div>
+          <div class="text-green-700 font-bold">{{ change | currency }}</div>
         </div>
       </div>
 

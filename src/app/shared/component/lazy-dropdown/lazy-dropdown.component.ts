@@ -29,6 +29,7 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
 
   dropdownOptions: any[] = [];
   selectedOption: any;
+  private initialValue: any;
 
   /** Cache storage: key = lookup + params JSON */
   private lookupCache: { [key: string]: any[] } = {};
@@ -54,25 +55,36 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
   }
 
   writeValue(value: any): void {
-    if (!value) {
-      this.selectedOption = this.multiply ? [] : null;
-      return;
+    this.initialValue = value; // always store incoming value
+    this.applyValueToSelection();
+    this.updateDropdownSelection();
+  }
+
+  private applyValueToSelection(): void {
+    if (!this.initialValue || !this.dropdownOptions.length) {
+      return; // wait until we have options
     }
 
     if (this.multiply) {
-      const values = Array.isArray(value)
-        ? value.map((v) => (typeof v === 'object' && 'value' in v ? v.value : v))
-        : [typeof value === 'object' && 'value' in value ? value.value : value];
+      const values = Array.isArray(this.initialValue)
+        ? this.initialValue.map((v) => (typeof v === 'object' && 'value' in v ? v.value : v))
+        : [
+            typeof this.initialValue === 'object' && 'value' in this.initialValue
+              ? this.initialValue.value
+              : this.initialValue,
+          ];
 
       this.selectedOption = values
-        .map((v) => this.dropdownOptions.find((opt) => opt.value === v))
+        .map((v) => this.dropdownOptions.find((opt) => opt.value == v))
         .filter(Boolean);
     } else {
-      const val = typeof value === 'object' && 'value' in value ? value.value : value;
-      this.selectedOption = this.dropdownOptions.find((opt) => opt.value === val) || null;
-    }
+      const val =
+        typeof this.initialValue === 'object' && 'value' in this.initialValue
+          ? this.initialValue.value
+          : this.initialValue;
 
-    this.updateDropdownSelection();
+      this.selectedOption = this.dropdownOptions.find((opt) => opt.value == val) || null;
+    }
   }
 
   registerOnChange(fn: any): void {
@@ -134,17 +146,19 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
               ? this.selectedOption
               : [this.selectedOption];
             selectedArray.forEach((option) => {
-              if (!this.dropdownOptions.some((item) => item.value === option.value)) {
+              if (!this.dropdownOptions.some((item) => item.value == option.value)) {
                 this.dropdownOptions.push(option);
               }
             });
           }
 
           this.lookupCache[cacheKey] = this.dropdownOptions;
+          this.applyValueToSelection();
           this.updateDropdownSelection();
         });
     } else {
       this.dropdownOptions = this.lookup;
+      this.applyValueToSelection();
       this.updateDropdownSelection();
     }
   }
@@ -155,7 +169,7 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
 
     if (this.multiply) {
       this.selectedOption = this.selectedOption
-        .map((sel: any) => this.dropdownOptions.find((opt) => opt.value === (sel.value ?? sel)))
+        .map((sel: any) => this.dropdownOptions.find((opt) => opt.value == (sel.value ?? sel)))
         .filter(Boolean);
     } else {
       const found = this.dropdownOptions.find(

@@ -69,7 +69,7 @@ import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
           [globalFilterFields]="['name', 'reference', 'category.name', 'status']"
           [(selection)]="selectedProducts"
           [rowHover]="true"
-          dataKey="id"
+          dataKey="product_id"
           [tableStyle]="{ 'min-width': '75rem' }"
           [showCurrentPageReport]="true"
           [rows]="pageSize"
@@ -256,12 +256,7 @@ export class ProductListComponent extends BaseComponent {
       if (result) {
         this.load(this.productService.updateProduct(product.product_id || '', result)).subscribe(
           (updatedProduct) => {
-            const index = this.products.findIndex(
-              (p) => p.product_id === updatedProduct.product_id
-            );
-            if (index !== -1) {
-              this.products[index] = updatedProduct;
-            }
+            this.getProducts();
           }
         );
       }
@@ -270,10 +265,7 @@ export class ProductListComponent extends BaseComponent {
 
   deleteProduct(product: ProductModel) {
     this.load(this.productService.deleteProduct([product.product_id || ''])).subscribe(() => {
-      this.products = this.products.filter((p) => p.product_id !== product.product_id);
-      this.selectedProducts = this.selectedProducts.filter(
-        (p) => p.product_id !== product.product_id
-      );
+      this.getProducts();
     });
   }
 
@@ -282,8 +274,7 @@ export class ProductListComponent extends BaseComponent {
 
     const productIds = this.selectedProducts.map((p) => p.product_id || '');
     this.load(this.productService.deleteProduct(productIds)).subscribe(() => {
-      this.products = this.products.filter((p) => !productIds.includes(p.product_id || ''));
-      this.selectedProducts = [];
+      this.getProducts();
     });
   }
 }

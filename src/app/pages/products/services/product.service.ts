@@ -40,9 +40,9 @@ export class ProductService {
       .pipe(map((res) => this.mapper.fromJson(ProductModel, res.data)));
   }
 
-  deleteProduct(id: string): Observable<ProductModel> {
+  deleteProduct(ids: string[]): Observable<ProductModel> {
     return this.baseAPI
-      .delete(ApiConstant.DELETE_PRODUCT.replace('{id}', id))
+      .delete(ApiConstant.DELETE_PRODUCT, { body: { ids } })
       .pipe(map((res) => this.mapper.fromJson(ProductModel, res.data)));
   }
 }

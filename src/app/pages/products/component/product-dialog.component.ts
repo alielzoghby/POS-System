@@ -14,6 +14,7 @@ import { DatePicker } from 'primeng/datepicker';
 import { ValidationErrorsComponent } from '@/shared/component/validation-errors/validation-errors.component';
 import { DEFAULT_CURRENCY_CODE } from '@/shared/config/config.constant';
 import { FileUpload } from 'primeng/fileupload';
+import { Lookup } from '@/shared/enums/lookup.enum';
 
 @Component({
   selector: 'app-product-dialog',
@@ -148,6 +149,17 @@ import { FileUpload } from 'primeng/fileupload';
           </div>
 
           <div class="field w-full">
+            <label for="category" class="block mb-3">{{ 'product.category' | translate }}</label>
+            <app-lazy-dropdown
+              id="category"
+              formControlName="category_id"
+              [lookup]="lookup.Categories"
+            ></app-lazy-dropdown>
+            <app-validation-errors [control]="form.get('category_id')" [formGroup]="form">
+            </app-validation-errors>
+          </div>
+
+          <div class="field w-full">
             <label for="expiration_date" class="block  mb-3">{{
               'product.expiration' | translate
             }}</label>
@@ -184,6 +196,7 @@ import { FileUpload } from 'primeng/fileupload';
 })
 export class ProductDialogComponent extends BaseComponent {
   protected DEFAULT_CURRENCY_CODE = DEFAULT_CURRENCY_CODE;
+  protected lookup = Lookup;
   form: FormGroup;
   statusOptions = Object.values(ProductStatus).map((status) => ({
     label: this.translate(`product.${status}`),
@@ -208,6 +221,7 @@ export class ProductDialogComponent extends BaseComponent {
       final_price: [data?.product?.final_price || null, Validators.required],
       quantity: [data?.product?.quantity || 0, Validators.required],
       status: [data?.product?.status || ProductStatus.InStock, Validators.required],
+      category_id: [data?.product?.category_id || null, Validators.required],
       expiration_date: [
         new Date(data?.product?.expiration_date || '') || new Date(),
         Validators.required,
@@ -226,14 +240,13 @@ export class ProductDialogComponent extends BaseComponent {
   }
 
   onImageSelected(event: any) {
-    // console.log(event);
     if (event.files && event.files.length > 0) {
       const file = event.files[0];
       const reader = new FileReader();
       reader.onload = () => {
         const base64 = reader.result as string;
         this.previewImage = base64;
-        this.form.patchValue({ image: file });
+        this.form.patchValue({ image: base64 });
       };
 
       reader.readAsDataURL(file);

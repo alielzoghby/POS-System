@@ -3,6 +3,6 @@ export enum URLSegment {
   User = 'user/',
   Users = 'users/',
   Categories = 'categories/',
-  Lookups = 'lookups/',
+  Lookups = 'lookup/',
   Products = 'products/',
 }

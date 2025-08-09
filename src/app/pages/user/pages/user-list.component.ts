@@ -50,7 +50,7 @@ import { CreateUserDialogComponent } from '../component/create-user-dialog.compo
           [value]="users"
           [paginator]="true"
           [rows]="pageSize"
-          [totalRecords]="pagination.totalocuments || 0"
+          [totalRecords]="pagination.totalDocuments || 0"
           [first]="((pagination!.currentPage ?? 1) - 1) * pageSize"
           [rowsPerPageOptions]="rowsPerPageOptions"
           [lazy]="true"

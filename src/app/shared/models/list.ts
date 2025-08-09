@@ -8,9 +8,6 @@ export class Pagination {
   itemsPerPage?: number;
 
   @Expose()
-  totalItems?: number;
-
-  @Expose()
   currentPage?: number;
 
   @Expose()
@@ -26,15 +23,5 @@ export class Pagination {
   hasPrevPage?: boolean;
 
   @Expose()
-  totalUsers?: number;
-
-  @Expose()
-  totalocuments?: number;
-
-  @Expose()
   totalDocuments?: number;
-
-  get totalRecords(): number {
-    return this.totalItems || this.totalUsers || this.totalocuments || 0;
-  }
 }

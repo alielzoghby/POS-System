@@ -133,13 +133,10 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
         this.lazyDropdownService
           .getDropdownData({
             type: this.lookup,
-            params: { start: first, limit: rows, ...this.lookUpExtraParams },
+            params: { limit: 1000, ...this.lookUpExtraParams },
           })
           .subscribe((data) => {
-            this.dropdownOptions = data.map((item) => ({
-              label: item.value,
-              value: item._id,
-            }));
+            this.dropdownOptions = data.categories || [];
 
             if (this.selectedOption && Array.isArray(this.selectedOption)) {
               this.selectedOption.forEach((option) => {

@@ -22,6 +22,9 @@ export class ProductModel {
   reference!: string;
 
   @Expose()
+  lot!: string;
+
+  @Expose()
   category!: CategoryModel;
 
   @Expose()
@@ -38,9 +41,6 @@ export class ProductModel {
 
   @Expose()
   status!: ProductStatus;
-
-  @Expose()
-  lot!: string;
 
   @Expose()
   expiration_date!: string;

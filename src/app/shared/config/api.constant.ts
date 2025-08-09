@@ -26,5 +26,5 @@ export class ApiConstant {
   static GET_PRODUCT_LIST = ApiConstant.URL_BASE + URLSegment.Products;
   static ADD_PRODUCT = ApiConstant.URL_BASE + URLSegment.Products;
   static UPDATE_PRODUCT = ApiConstant.URL_BASE + URLSegment.Products + '{id}';
-  static DELETE_PRODUCT = ApiConstant.URL_BASE + URLSegment.Products + '{id}';
+  static DELETE_PRODUCT = ApiConstant.URL_BASE + URLSegment.Products;
 }

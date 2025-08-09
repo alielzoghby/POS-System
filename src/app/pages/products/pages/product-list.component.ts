@@ -249,7 +249,12 @@ export class ProductListComponent extends BaseComponent {
   }
 
   deleteProduct(product: ProductModel) {
-    console.log('Delete product', product);
+    this.load(this.productService.deleteProduct([product.product_id])).subscribe(() => {
+      this.products = this.products.filter((p) => p.product_id !== product.product_id);
+      this.selectedProducts = this.selectedProducts.filter(
+        (p) => p.product_id !== product.product_id
+      );
+    });
   }
 
   deleteSelectedProducts() {

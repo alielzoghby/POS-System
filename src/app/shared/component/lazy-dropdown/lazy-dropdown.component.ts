@@ -1,20 +1,10 @@
-import { HttpClient } from '@angular/common/http';
-import {
-  Component,
-  forwardRef,
-  Inject,
-  Injector,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges,
-} from '@angular/core';
-import { LazyDropdownService } from '../../services/lazy-dropdown.service';
-import { FormsModule, NG_VALUE_ACCESSOR, NgModel } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { Component, forwardRef, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
-import { CommonModule } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
+import { LazyDropdownService } from '../../services/lazy-dropdown.service';
 
 @Component({
   selector: 'app-lazy-dropdown',
@@ -31,18 +21,17 @@ import { TranslateService } from '@ngx-translate/core';
   ],
 })
 export class LazyDropdownComponent implements OnInit, OnChanges {
-  @Input()
-  lookup!: any;
+  @Input() lookup!: any;
   @Input() lookUpExtraParams!: any;
   @Input() placeholder: string = '';
   @Input() multiply: boolean = false;
   @Input() disable: boolean = false;
+
   dropdownOptions: any[] = [];
   selectedOption: any;
-  isDataLoaded: boolean = false;
 
+  /** Cache storage: key = lookup + params JSON */
   private lookupCache: { [key: string]: any[] } = {};
-  skipCash: boolean = false;
 
   constructor(
     private lazyDropdownService: LazyDropdownService,
@@ -55,13 +44,12 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
         this.placeholder = translated;
       });
     }
-    this.loadOptions();
+    this.loadOptions(); // initial load
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['lookUpExtraParams']) {
-      this.skipCash = true;
-      this.loadOptions();
+      this.loadOptions(true); // force reload when params change
     }
   }
 
@@ -76,7 +64,6 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
         ? value.map((v) => (typeof v === 'object' && 'value' in v ? v.value : v))
         : [typeof value === 'object' && 'value' in value ? value.value : value];
 
-      // Try to match with options
       this.selectedOption = values
         .map((v) => this.dropdownOptions.find((opt) => opt.value === v))
         .filter(Boolean);
@@ -99,18 +86,17 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
   private onChange: any = () => {};
   private onTouched: any = () => {};
 
-  onDropdownOpen() {
-    if (!this.isDataLoaded) {
-      this.loadOptions();
-    }
+  /** Called when dropdown panel opens */
+  onDropdownOpen(): void {
+    this.loadOptions(); // will use cache if available
   }
 
-  onDropdownClose() {
-    this.isDataLoaded = false;
-    this.skipCash = false;
+  /** Called when dropdown closes */
+  onDropdownClose(): void {
     this.onTouched();
   }
 
+  /** When user selects an option */
   onOptionSelect(event: any): void {
     this.selectedOption = event.value;
 
@@ -123,47 +109,48 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
     this.onTouched();
   }
 
-  loadOptions(event: any = { first: 0, rows: 10 }) {
+  /** Loads options from cache or API */
+  private loadOptions(forceReload: boolean = false): void {
     if (typeof this.lookup === 'string') {
-      if (this.lookupCache[this.lookup] && !this.skipCash) {
-        this.dropdownOptions = this.lookupCache[this.lookup];
-        this.isDataLoaded = true;
-      } else {
-        const { first, rows } = event;
-        this.lazyDropdownService
-          .getDropdownData({
-            type: this.lookup,
-            params: { limit: 1000, ...this.lookUpExtraParams },
-          })
-          .subscribe((data) => {
-            this.dropdownOptions = data.categories || [];
+      const cacheKey = this.lookup + JSON.stringify(this.lookUpExtraParams || {});
 
-            if (this.selectedOption && Array.isArray(this.selectedOption)) {
-              this.selectedOption.forEach((option) => {
-                if (!this.dropdownOptions.some((item) => item.value === option.value)) {
-                  this.dropdownOptions.push(option);
-                }
-              });
-            } else if (
-              this.selectedOption.value &&
-              !this.dropdownOptions.some((item) => item.value === this.selectedOption.value)
-            ) {
-              this.dropdownOptions.push(this.selectedOption);
-            }
-
-            this.lookupCache[this.lookup] = this.dropdownOptions;
-            this.isDataLoaded = true;
-            this.updateDropdownSelection();
-          });
+      if (this.lookupCache[cacheKey] && !forceReload) {
+        this.dropdownOptions = this.lookupCache[cacheKey];
+        this.updateDropdownSelection();
+        return;
       }
+
+      this.lazyDropdownService
+        .getDropdownData({
+          type: this.lookup,
+          params: { limit: 1000, ...this.lookUpExtraParams },
+        })
+        .subscribe((data) => {
+          this.dropdownOptions = data.categories || [];
+
+          // Keep any pre-selected values
+          if (this.selectedOption) {
+            const selectedArray = Array.isArray(this.selectedOption)
+              ? this.selectedOption
+              : [this.selectedOption];
+            selectedArray.forEach((option) => {
+              if (!this.dropdownOptions.some((item) => item.value === option.value)) {
+                this.dropdownOptions.push(option);
+              }
+            });
+          }
+
+          this.lookupCache[cacheKey] = this.dropdownOptions;
+          this.updateDropdownSelection();
+        });
     } else {
       this.dropdownOptions = this.lookup;
-      this.isDataLoaded = true;
       this.updateDropdownSelection();
     }
   }
 
-  private updateDropdownSelection() {
+  /** Sync selectedOption with dropdownOptions */
+  private updateDropdownSelection(): void {
     if (!this.selectedOption || !this.dropdownOptions?.length) return;
 
     if (this.multiply) {

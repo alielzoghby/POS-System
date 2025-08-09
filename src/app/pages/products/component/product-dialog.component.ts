@@ -223,7 +223,7 @@ export class ProductDialogComponent extends BaseComponent {
       status: [data?.product?.status || ProductStatus.InStock, Validators.required],
       category_id: [data?.product?.category_id || null, Validators.required],
       expiration_date: [
-        new Date(data?.product?.expiration_date || '') || new Date(),
+        new Date(data?.product?.expiration_date || new Date()),
         Validators.required,
       ],
     });

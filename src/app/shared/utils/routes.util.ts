@@ -21,6 +21,12 @@ export class RoutesUtil {
   static User = new RouteConfig('user');
   static UserProfile = new RouteConfig<{ id: number }>('profile/:id', RoutesUtil.User);
   static UserList = new RouteConfig('list', RoutesUtil.User);
-  static AddUser = new RouteConfig('add', RoutesUtil.User);
-  static AddParent = new RouteConfig('add-Parent', RoutesUtil.User);
+
+  // static Category = new RouteConfig('category');
+  static Category = new RouteConfig('category');
+  static CategoryList = new RouteConfig('list', RoutesUtil.Category);
+
+  // static Product = new RouteConfig('product');
+  static Product = new RouteConfig('product');
+  static ProductList = new RouteConfig('list', RoutesUtil.Product);
 }

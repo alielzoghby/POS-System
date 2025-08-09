@@ -1,5 +1,5 @@
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig, DEFAULT_CURRENCY_CODE, importProvidersFrom } from '@angular/core';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {
   provideRouter,
@@ -20,6 +20,7 @@ import { successInterceptor } from '@/shared/interceptors/success.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: DEFAULT_CURRENCY_CODE, useValue: 'EUR' },
     MessageService,
     JwtHelperService,
     provideHttpClient(withInterceptors([authInterceptor, successInterceptor, errorInterceptor])),

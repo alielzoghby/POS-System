@@ -10,4 +10,4 @@ export default [
     path: RoutesUtil.UserList.path,
     component: UserListComponent,
   },
-] as Routes;
+] satisfies Routes;

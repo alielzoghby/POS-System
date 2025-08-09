@@ -13,7 +13,7 @@ import { MenuItem } from 'primeng/api';
 import { MatDialog } from '@angular/material/dialog';
 import { RoutesUtil } from '@/shared/utils/routes.util';
 import { StateSectionComponent } from '@/shared/component/state-section/state-section.component';
-import { Button } from 'primeng/button';
+import { ButtonModule } from 'primeng/button';
 import { EditProfileDialogComponent } from '../component/edit-profile-dialog.component';
 import { CreateUserDialogComponent } from '../component/create-user-dialog.component';
 
@@ -27,28 +27,32 @@ import { CreateUserDialogComponent } from '../component/create-user-dialog.compo
     TagModule,
     SplitButton,
     StateSectionComponent,
-    Button,
+    ButtonModule,
+    ButtonModule,
   ],
   template: `
     <app-state-section [state]="sectionState">
       <div class="p-6 w-full  bg-surface-overlay rounded-xl shadow-md">
-        <div class="flex justify-end mb-4">
-          <p-button
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-semibold">
+            {{ 'user.usersList' | translate }}
+          </h2>
+          <button
             pButton
             icon="pi pi-plus"
+            class="h-[60px]"
             label="{{ 'user.create' | translate }}"
             (click)="openCreateDialog()"
-          ></p-button>
+          ></button>
         </div>
 
         <p-table
           [value]="users"
           [paginator]="true"
-          [rows]="rows"
-          [totalRecords]="pagination.totalUsers || 0"
-          [first]="((pagination.currentPage ?? 1) - 1) * rows"
-          [rowsPerPageOptions]="[5, 10, 20]"
-          [responsiveLayout]="'scroll'"
+          [rows]="pageSize"
+          [totalRecords]="pagination.totalocuments || 0"
+          [first]="((pagination!.currentPage ?? 1) - 1) * pageSize"
+          [rowsPerPageOptions]="rowsPerPageOptions"
           [lazy]="true"
           (onLazyLoad)="onPageChange($event)"
           class="shadow-md rounded-md"
@@ -83,17 +87,7 @@ import { CreateUserDialogComponent } from '../component/create-user-dialog.compo
 })
 export class UserListComponent extends BaseComponent {
   users: User[] = [];
-  pagination: Pagination = {
-    currentPage: 1,
-    totalPages: 0,
-    hasNextPage: false,
-    hasPrevPage: false,
-    totalUsers: 0,
-  };
-
   userActionsMap = new Map<number, MenuItem[]>();
-
-  rows = 10;
 
   constructor(
     private router: Router,
@@ -127,6 +121,7 @@ export class UserListComponent extends BaseComponent {
   openEditDialog(type: 'profile' | 'password', user: User) {
     const dialogRef = this.dialog.open(EditProfileDialogComponent, {
       data: { type, user },
+      width: '400px',
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -150,11 +145,11 @@ export class UserListComponent extends BaseComponent {
   onPageChange(event: any): void {
     const page = event.first / event.rows + 1;
     const rows = event.rows;
-    this.rows = rows;
+    this.pageSize = rows;
     this.getUsers(page, rows);
   }
 
-  getUsers(page: number = 1, limit: number = 10): void {
+  getUsers(page: number = this.pageIndex, limit: number = this.pageSize): void {
     this.load(this.userService.getUsers({ page, limit }), {
       isLoadingTransparent: true,
     }).subscribe((res) => {
@@ -164,7 +159,7 @@ export class UserListComponent extends BaseComponent {
           this.userActionsMap.set(user.user_id, this.buildActions(user));
         }
       });
-      this.pagination = res.pagination || {};
+      this.pagination = res.pagination ?? new Pagination();
     });
   }
 }

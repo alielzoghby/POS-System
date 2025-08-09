@@ -1,4 +1,4 @@
-import { Expose, Transform } from 'class-transformer';
+import { Expose } from 'class-transformer';
 import { Model } from './model';
 import { UserRole } from '../enums/user-role.enum';
 import { Pagination } from './list';

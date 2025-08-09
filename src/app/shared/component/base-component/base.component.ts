@@ -8,6 +8,7 @@ import { AsyncFeedbackService } from '../../services/general/async-feedback.serv
 import { getValueByPath } from '../../utils/get-value-by-path.util';
 import { FiltersBase } from '../../services/general/filters-base.service';
 import { StorageConstant } from '../../config/storage.constant';
+import { Pagination } from '@/shared/models/list';
 
 type HandlerOptions = {
   startWith?: (...args: any) => any;
@@ -37,6 +38,7 @@ export class BaseComponent<Filters = any> implements OnDestroy {
   public searchTerm: string = '';
   public totalRowsCount = 0;
   public rowsPerPageOptions = ConfigConstant.ROWS_PER_PAGE_OPTIONS;
+  public pagination: Pagination = new Pagination();
 
   public filters: FiltersBase<Filters, any>;
 

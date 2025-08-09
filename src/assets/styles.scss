@@ -3,8 +3,8 @@
 // components according to the Material 3 design spec.
 // Learn more about theming and how to use it for your application's
 // custom components at https://material.angular.dev/guide/theming
-@use './tailwind.css';
 
+@use './tailwind.css';
 @use '@angular/material' as mat;
 
 @use './layout/layout.scss';
@@ -72,4 +72,14 @@ body {
 
 .mat-mdc-dialog-surface {
   background: transparent !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  padding: 0;
 }

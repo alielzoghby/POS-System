@@ -15,4 +15,16 @@ export class ApiConstant {
   static GET_ALL_NOTIFICATIONS = ApiConstant.URL_BASE + URLSegment.User + 'notification';
   static GET_NOTIFICATION_BY_ID = ApiConstant.URL_BASE + URLSegment.User + 'notification/' + '{id}';
   static MARK_ALL_AS_READ = ApiConstant.URL_BASE + URLSegment.User + 'notification';
+
+  static GET_CATEGORY = ApiConstant.URL_BASE + URLSegment.Categories + '{id}';
+  static GET_CATEGORY_LIST = ApiConstant.URL_BASE + URLSegment.Categories;
+  static ADD_CATEGORY = ApiConstant.URL_BASE + URLSegment.Categories;
+  static UPDATE_CATEGORY = ApiConstant.URL_BASE + URLSegment.Categories + '{id}';
+  static DELETE_CATEGORY = ApiConstant.URL_BASE + URLSegment.Categories + '{id}';
+
+  static GET_PRODUCT = ApiConstant.URL_BASE + URLSegment.Products + '{id}';
+  static GET_PRODUCT_LIST = ApiConstant.URL_BASE + URLSegment.Products;
+  static ADD_PRODUCT = ApiConstant.URL_BASE + URLSegment.Products;
+  static UPDATE_PRODUCT = ApiConstant.URL_BASE + URLSegment.Products + '{id}';
+  static DELETE_PRODUCT = ApiConstant.URL_BASE + URLSegment.Products + '{id}';
 }

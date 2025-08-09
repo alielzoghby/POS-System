@@ -35,9 +35,19 @@ export class AppMenu extends BaseComponent {
       },
       {
         label: this.translate('Users'),
-        icon: 'pi pi-users',
+        icon: 'pi pi-fw pi-users',
         routerLink: [RoutesUtil.UserList.url()],
         visible: this.userRoleService.isUserHasRoles(RolesConstants.ADD_EDIT_USER),
+      },
+      {
+        label: this.translate('Category'),
+        icon: 'pi pi-fw pi-tags',
+        routerLink: [RoutesUtil.CategoryList.url()],
+      },
+      {
+        label: this.translate('Products'),
+        icon: 'pi pi-fw pi-box',
+        routerLink: [RoutesUtil.ProductList.url()],
       },
     ];
   }

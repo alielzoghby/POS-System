@@ -66,11 +66,25 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
   }
 
   writeValue(value: any): void {
-    if (value && value.status) {
-      this.selectedOption = value.status[0];
-    } else {
-      this.selectedOption = value;
+    if (!value) {
+      this.selectedOption = this.multiply ? [] : null;
+      return;
     }
+
+    if (this.multiply) {
+      const values = Array.isArray(value)
+        ? value.map((v) => (typeof v === 'object' && 'value' in v ? v.value : v))
+        : [typeof value === 'object' && 'value' in value ? value.value : value];
+
+      // Try to match with options
+      this.selectedOption = values
+        .map((v) => this.dropdownOptions.find((opt) => opt.value === v))
+        .filter(Boolean);
+    } else {
+      const val = typeof value === 'object' && 'value' in value ? value.value : value;
+      this.selectedOption = this.dropdownOptions.find((opt) => opt.value === val) || null;
+    }
+
     this.updateDropdownSelection();
   }
 
@@ -100,7 +114,12 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
   onOptionSelect(event: any): void {
     this.selectedOption = event.value;
 
-    this.onChange(this.selectedOption);
+    if (this.multiply) {
+      this.onChange(this.selectedOption.map((opt: any) => opt.value));
+    } else {
+      this.onChange(this.selectedOption.value);
+    }
+
     this.onTouched();
   }
 
@@ -148,11 +167,17 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
   }
 
   private updateDropdownSelection() {
-    if (this.selectedOption) {
-      const selected = this.dropdownOptions.find((option) => option.value === this.selectedOption);
-      if (selected) {
-        this.selectedOption = selected.value;
-      }
+    if (!this.selectedOption || !this.dropdownOptions?.length) return;
+
+    if (this.multiply) {
+      this.selectedOption = this.selectedOption
+        .map((sel: any) => this.dropdownOptions.find((opt) => opt.value === (sel.value ?? sel)))
+        .filter(Boolean);
+    } else {
+      const found = this.dropdownOptions.find(
+        (opt) => opt.value === (this.selectedOption.value ?? this.selectedOption)
+      );
+      if (found) this.selectedOption = found;
     }
   }
 }

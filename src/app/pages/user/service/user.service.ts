@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
-
-import { Router } from '@angular/router';
-import { UserRole } from '@/shared/enums/user-role.enum';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ApiBaseService } from '@/shared/services/general/api-base.service';
 import { Mapper } from '@/shared/mapper/base-mapper.mapper';
 import { ApiConstant } from '@/shared/config/api.constant';
@@ -54,20 +51,5 @@ export class UserService {
     return this.baseAPI
       .patch(ApiConstant.UPDATE_USER.replace('{id}', userId), filterNullEntity(body))
       .pipe(map((res) => this.mapper.fromJson(User, res.data)));
-  }
-
-  ///notification
-  getAllNotifications(): Observable<any> {
-    return this.baseAPI.get(ApiConstant.GET_ALL_NOTIFICATIONS).pipe(map((res) => res.data));
-  }
-
-  getNotificationById(id: string): Observable<Notification> {
-    return this.baseAPI
-      .get(ApiConstant.GET_NOTIFICATION_BY_ID.replace('{id}', id))
-      .pipe(map((res) => this.mapper.fromJson(Notification, res.data.notification)));
-  }
-
-  markAllAsRead(): Observable<any> {
-    return this.baseAPI.patch(ApiConstant.MARK_ALL_AS_READ, {}).pipe(map((res) => res.data));
   }
 }

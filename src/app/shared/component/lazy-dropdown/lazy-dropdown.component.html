@@ -1,4 +1,4 @@
-<div class="dropdown">
+<div class="w-full">
   <p-select
     *ngIf="!multiply"
     [options]="dropdownOptions"
@@ -12,6 +12,7 @@
     [(ngModel)]="selectedOption"
     (onChange)="onOptionSelect($event)"
     [disabled]="disable"
+    class="w-full"
   ></p-select>
 
   <p-multiSelect
@@ -27,5 +28,6 @@
     [(ngModel)]="selectedOption"
     (onChange)="onOptionSelect($event)"
     [disabled]="disable"
+    styleClass="w-full"
   ></p-multiSelect>
 </div>

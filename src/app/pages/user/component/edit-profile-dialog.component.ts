@@ -25,14 +25,24 @@ import { User } from '@/shared/models/user.model';
     ValidationErrorsComponent,
   ],
   template: `
-    <div class="p-6 w-full max-w-md bg-surface-overlay rounded-xl shadow-md">
-      <h2 class="text-2xl font-bold text-primary mb-6">
-        {{
-          data.type === 'profile'
-            ? ('profile.editProfile' | translate)
-            : ('profile.changePassword' | translate)
-        }}
-      </h2>
+    <div class="p-4 bg-surface-overlay rounded-xl shadow-md">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-bold text-primary">
+          {{
+            data.type === 'profile'
+              ? ('profile.editProfile' | translate)
+              : ('profile.changePassword' | translate)
+          }}
+        </h2>
+        <button
+          pButton
+          icon="pi pi-times"
+          class="p-button-rounded p-button-text p-button-sm"
+          (click)="cancel()"
+          type="button"
+          aria-label="Close"
+        ></button>
+      </div>
 
       <form [formGroup]="form" (ngSubmit)="save()" class="space-y-4">
         <ng-container *ngIf="data.type === 'profile'">

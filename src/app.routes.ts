@@ -24,6 +24,14 @@ export const appRoutes: Routes = [
     children: [
       { path: RoutesUtil.Dashboard.path, component: Dashboard },
       { path: RoutesUtil.User.path, loadChildren: () => import('./app/pages/user/user.routes') },
+      {
+        path: RoutesUtil.Category.path,
+        loadChildren: () => import('./app/pages/categories/category.routes'),
+      },
+      {
+        path: RoutesUtil.Product.path,
+        loadChildren: () => import('./app/pages/products/product.routes'),
+      },
     ],
   },
 

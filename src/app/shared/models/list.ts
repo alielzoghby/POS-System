@@ -5,7 +5,10 @@ export class Pagination {
   totalPages?: number;
 
   @Expose()
-  totalDocuments?: number;
+  itemsPerPage?: number;
+
+  @Expose()
+  totalItems?: number;
 
   @Expose()
   currentPage?: number;
@@ -24,4 +27,14 @@ export class Pagination {
 
   @Expose()
   totalUsers?: number;
+
+  @Expose()
+  totalocuments?: number;
+
+  @Expose()
+  totalDocuments?: number;
+
+  get totalRecords(): number {
+    return this.totalItems || this.totalUsers || this.totalocuments || 0;
+  }
 }

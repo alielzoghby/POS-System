@@ -1,3 +1,4 @@
+export const DEFAULT_CURRENCY_CODE = 'EUR';
 export class ConfigConstant {
   static APPLICATION_NAME = 'POS System';
   static PAGE_SIZE = 10;

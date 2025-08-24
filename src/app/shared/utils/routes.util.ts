@@ -29,4 +29,7 @@ export class RoutesUtil {
   // static Product = new RouteConfig('product');
   static Product = new RouteConfig('product');
   static ProductList = new RouteConfig('list', RoutesUtil.Product);
+
+  // Configuration
+  static Configuration = new RouteConfig('Configuration');
 }

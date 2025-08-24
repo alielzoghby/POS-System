@@ -8,6 +8,7 @@ import { AuthGuard } from '@/shared/guards/auth.guard';
 import { GuestGuard } from '@/shared/guards/guest.guard';
 import { WildcardRedirectGuard } from '@/shared/guards/wildcard-redirect.guard';
 import { Landing } from '@/pages/landing/pages/landing';
+import { ConfigurationComponent } from '@/pages/configuration/pages/configuration.component';
 
 export const appRoutes: Routes = [
   {
@@ -31,6 +32,10 @@ export const appRoutes: Routes = [
       {
         path: RoutesUtil.Product.path,
         loadChildren: () => import('./app/pages/products/product.routes'),
+      },
+      {
+        path: RoutesUtil.Configuration.path,
+        component: ConfigurationComponent,
       },
     ],
   },

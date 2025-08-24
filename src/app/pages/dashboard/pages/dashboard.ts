@@ -63,10 +63,12 @@ export class Dashboard extends BaseComponent {
   }
 
   handleCheckout(event: any) {
+    const productsWithoutName = this.products.map(({ name, ...rest }) => rest);
+
     const order: OrderModel = {
       client_id: 1,
       reference: 'REF123',
-      products: this.products,
+      products: productsWithoutName,
     };
 
     this.orderService.createOrder(order).subscribe((response) => {

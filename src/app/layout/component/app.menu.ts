@@ -49,6 +49,12 @@ export class AppMenu extends BaseComponent {
         icon: 'pi pi-fw pi-box',
         routerLink: [RoutesUtil.ProductList.url()],
       },
+      {
+        label: this.translate('Configuration'),
+        icon: 'pi pi-fw pi-cog',
+        routerLink: [RoutesUtil.Configuration.url()],
+        visible: this.userRoleService.isUserHasRoles(RolesConstants.EDIT_CONFIGURATION),
+      },
     ];
   }
 }

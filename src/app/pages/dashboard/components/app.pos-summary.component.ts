@@ -45,7 +45,7 @@ import { HttpClient } from '@angular/common/http';
           </div>
 
           <!-- Voucher Code -->
-          <div *ngIf="paymentMethod === 'voucher'" class="mt-3 ">
+          <div *ngIf="paymentMethod === 'VOUCHER'" class="mt-3 ">
             <div class="flex items-end gap-4">
               <div class="w-full">
                 <label class="block text-lg font-semibold">{{
@@ -78,7 +78,7 @@ import { HttpClient } from '@angular/common/http';
           </div>
 
           <!-- Card Reference -->
-          <div *ngIf="paymentMethod === 'card'" class="mt-3">
+          <div *ngIf="paymentMethod === 'CARD'" class="mt-3">
             <label class="block text-lg font-semibold">{{
               'POS.CARD_REFERENCE' | translate
             }}</label>
@@ -144,12 +144,12 @@ export class PosSummaryComponent {
   selectedTip = 0;
   loading = false;
 
-  paymentMethods: { label: string; value: 'cash' | 'card' | 'voucher' }[] = [
-    { label: 'POS.PAYMENT_CASH', value: 'cash' },
-    { label: 'POS.PAYMENT_CARD', value: 'card' },
-    { label: 'POS.PAYMENT_VOUCHER', value: 'voucher' },
+  paymentMethods: { label: string; value: 'CASH' | 'CARD' | 'VOUCHER' }[] = [
+    { label: 'POS.PAYMENT_CASH', value: 'CASH' },
+    { label: 'POS.PAYMENT_CARD', value: 'CARD' },
+    { label: 'POS.PAYMENT_VOUCHER', value: 'VOUCHER' },
   ];
-  paymentMethod: 'cash' | 'card' | 'voucher' = 'cash';
+  paymentMethod: 'CASH' | 'CARD' | 'VOUCHER' = 'CASH';
 
   customerPaid = 0;
   voucherCode = '';
@@ -175,15 +175,15 @@ export class PosSummaryComponent {
     this.selectedTip = tip;
   }
 
-  selectPaymentMethod(method: 'cash' | 'card' | 'voucher') {
+  selectPaymentMethod(method: 'CASH' | 'CARD' | 'VOUCHER') {
     this.paymentMethod = method;
     // Reset related fields
-    if (method !== 'voucher') {
+    if (method !== 'VOUCHER') {
       this.voucherCode = '';
       this.voucherDiscount = 0;
       this.voucherInvalid = false;
     }
-    if (method !== 'card') {
+    if (method !== 'CARD') {
       this.cardReference = '';
     }
   }

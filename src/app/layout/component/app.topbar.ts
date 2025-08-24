@@ -114,7 +114,8 @@ export class AppTopbar extends BaseComponent {
     private router: Router
   ) {
     super();
-    this.currentUser = plainToInstance(User, this.authService.currentUser$.value.user);
+    this.currentUser =
+      plainToInstance(User, this.authService?.currentUser$?.value?.user) || new User();
     this.generateMenuItems();
   }
 

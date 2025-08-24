@@ -32,6 +32,7 @@
   "EmailRequired": "Email is required",
   "Category": "Category",
   "Products": "Products",
+  "Configuration": "Configuration",
   "POS": {
     "ADD_TIP": "Add Tip",
     "PAYMENT_METHOD": "Payment Method",
@@ -102,7 +103,14 @@
     "create": "Create",
     "delete": "Delete",
     "search": "Search...",
-    "chooseAnImage": "Choose an image"
+    "chooseAnImage": "Choose an image",
+    "error": "Error",
+    "success": "Success"
+  },
+  "configuration": {
+    "title": "Configuration",
+    "tax": "Tax",
+    "enterTax": "Enter Tax Percentage"
   },
   "formErrors": {
     "required": "This field is required",

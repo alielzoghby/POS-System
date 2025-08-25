@@ -22,11 +22,7 @@ export class ProductService {
       .pipe(map((res) => this.mapper.fromJson(ProductModel, res.data)));
   }
 
-  getProducts(body: {
-    page: number;
-    limit: number;
-    reference: string;
-  }): Observable<ProductListModel> {
+  getProducts(body: { page: number; limit: number; search: string }): Observable<ProductListModel> {
     return this.baseAPI
       .get(ApiConstant.GET_PRODUCT_LIST, { params: filterNullEntity(body) })
       .pipe(map((res) => this.mapper.fromJson(ProductListModel, res.data)));

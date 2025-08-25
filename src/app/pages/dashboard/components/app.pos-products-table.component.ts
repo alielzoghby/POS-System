@@ -150,7 +150,7 @@ export class PosProductTableComponent extends BaseComponent {
         switchMap((searchTerm) =>
           this.productService.getProducts({
             limit: 1000,
-            reference: searchTerm,
+            search: searchTerm,
             page: this.pageIndex,
           })
         )

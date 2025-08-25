@@ -21,9 +21,8 @@ import {
 import { VoucherPrintComponent } from '../components/voucher-print-component';
 import { FormsModule } from '@angular/forms';
 import { InputText } from 'primeng/inputtext';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-voucher-list',
@@ -38,6 +37,7 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
     CardModule,
     StateSectionComponent,
     InputText,
+    Tooltip,
   ],
   template: `
     <app-state-section [state]="sectionState">
@@ -99,18 +99,21 @@ import { debounceTime, distinctUntilChanged } from 'rxjs';
                   icon="pi pi-pencil"
                   class="p-button-rounded p-button-text p-button-info"
                   (click)="onEdit(voucher)"
+                  [pTooltip]="'common.edit' | translate"
                 ></button>
                 <button
                   pButton
                   icon="pi pi-trash"
                   class="p-button-rounded p-button-text p-button-danger"
                   (click)="onDelete(voucher)"
+                  [pTooltip]="'common.delete' | translate"
                 ></button>
                 <button
                   pButton
                   icon="pi pi-print"
                   class="p-button-rounded p-button-text p-button-warning"
                   (click)="onPrint(voucher)"
+                  [pTooltip]="'common.print' | translate"
                 ></button>
               </td>
             </tr>

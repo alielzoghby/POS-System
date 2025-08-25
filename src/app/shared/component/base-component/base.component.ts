@@ -71,6 +71,7 @@ export class BaseComponent<Filters = any> implements OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next(true);
     this.destroy$.complete();
+    this.searchTermSubject.complete();
   }
 
   protected translate(key: string, projection = {}): string {

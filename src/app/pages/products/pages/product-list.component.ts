@@ -171,21 +171,20 @@ export class ProductListComponent extends BaseComponent {
   products!: ProductModel[];
   selectedProducts: ProductModel[] = [];
   globalFilterValue: string = '';
-  searchSubject = new Subject<string>();
 
   constructor(
     private productService: ProductService,
     private dialog: MatDialog
   ) {
     super();
-    this.searchSubject
+    this.searchTermSubject
       .pipe(
-        debounceTime(300),
+        debounceTime(500),
         distinctUntilChanged(),
         switchMap((searchTerm) =>
           this.productService.getProducts({
             limit: this.pageSize,
-            reference: searchTerm,
+            search: searchTerm,
             page: this.pageIndex,
           })
         )
@@ -212,7 +211,7 @@ export class ProductListComponent extends BaseComponent {
   onGlobalFilter(table: any, event: Event) {
     const input = event.target as HTMLInputElement;
     this.globalFilterValue = input.value;
-    this.searchSubject.next(this.globalFilterValue);
+    this.searchTermSubject.next(this.globalFilterValue);
   }
 
   onPageChange(event: any): void {
@@ -223,7 +222,7 @@ export class ProductListComponent extends BaseComponent {
   }
 
   getProducts(page: number = this.pageIndex, limit: number = this.pageSize): void {
-    this.load(this.productService.getProducts({ page, limit, reference: this.globalFilterValue }), {
+    this.load(this.productService.getProducts({ page, limit, search: this.globalFilterValue }), {
       isLoadingTransparent: true,
     }).subscribe((res) => {
       this.products = res.products || [];

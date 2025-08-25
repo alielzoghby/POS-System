@@ -224,9 +224,9 @@ export class PosSummaryComponent extends BaseComponent {
   verifyVoucher() {
     this.load(this.voucherService.getVoucher(this.voucherCode)).subscribe(
       (res) => {
-        this.appliedVoucher = res;
+        if (res && this.voucherCode) {
+          this.appliedVoucher = res;
 
-        if (res) {
           if (res.amount) {
             this.voucherDiscount = res.amount;
           } else if (res.percentage) {

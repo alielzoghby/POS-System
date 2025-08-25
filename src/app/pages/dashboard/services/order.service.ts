@@ -15,7 +15,7 @@ export class OrderService {
     private mapper: Mapper
   ) {}
 
-  createOrder(body: OrderModel): Observable<OrderModel> {
+  createOrder(body: any): Observable<OrderModel> {
     return this.baseAPI
       .post(ApiConstant.CREATE_ORDER, filterNullEntity(body))
       .pipe(map((res) => this.mapper.fromJson(OrderModel, res.data)));

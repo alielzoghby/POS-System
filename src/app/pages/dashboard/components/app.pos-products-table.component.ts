@@ -101,6 +101,7 @@ import { Popover } from 'primeng/popover';
               <td class="py-4 px-3">
                 <p-inputNumber
                   [(ngModel)]="product.quantity"
+                  [inputStyleClass]="'w-[50px] text-center'"
                   [min]="1"
                   inputStyleClass="text-xl px-3 py-2 rounded-lg"
                   (onInput)="updateTotal(i)"

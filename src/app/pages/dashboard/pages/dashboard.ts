@@ -62,12 +62,22 @@ export class Dashboard extends BaseComponent {
     this.calculateTotals();
   }
 
-  handleCheckout(event: any) {
+  handleCheckout(event: {
+    total: number;
+    paid: number;
+    change: number;
+    tip: number;
+    method: string;
+    voucher: string;
+    cardReference: string;
+  }) {
     const productsWithoutName = this.products.map(({ name, ...rest }) => rest);
 
-    const order: OrderModel = {
+    const order = {
       client_id: 1,
-      reference: 'REF123',
+      voucher_refrenc: event.voucher,
+      payment_methoud: event.method,
+      tip: event.tip,
       products: productsWithoutName,
     };
 

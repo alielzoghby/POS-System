@@ -9,6 +9,7 @@ import { GuestGuard } from '@/shared/guards/guest.guard';
 import { WildcardRedirectGuard } from '@/shared/guards/wildcard-redirect.guard';
 import { Landing } from '@/pages/landing/pages/landing';
 import { ConfigurationComponent } from '@/pages/configuration/pages/configuration.component';
+import { VoucherListComponent } from '@/pages/voucher/pages/voucher-list.component';
 
 export const appRoutes: Routes = [
   {
@@ -36,6 +37,10 @@ export const appRoutes: Routes = [
       {
         path: RoutesUtil.Configuration.path,
         component: ConfigurationComponent,
+      },
+      {
+        path: RoutesUtil.Voucher.path,
+        component: VoucherListComponent,
       },
     ],
   },

@@ -36,6 +36,8 @@ export class BaseComponent<Filters = any> implements OnDestroy {
   public pageIndex: number = ConfigConstant.INIT_PAGE_INDEX;
   public offset: number = ConfigConstant.INIT_PAGE_OFFSET;
   public searchTerm: string = '';
+  public searchTermSubject = new Subject<string>();
+
   public totalRowsCount = 0;
   public rowsPerPageOptions = ConfigConstant.ROWS_PER_PAGE_OPTIONS;
   public pagination: Pagination = new Pagination();
@@ -61,6 +63,10 @@ export class BaseComponent<Filters = any> implements OnDestroy {
   }
 
   protected onLanguageChange(): void {}
+
+  onSearchChange(term: string) {
+    this.searchTermSubject.next(term);
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next(true);

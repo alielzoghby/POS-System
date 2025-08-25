@@ -55,6 +55,11 @@ export class AppMenu extends BaseComponent {
         routerLink: [RoutesUtil.Configuration.url()],
         visible: this.userRoleService.isUserHasRoles(RolesConstants.EDIT_CONFIGURATION),
       },
+      {
+        label: this.translate('Vouchers'),
+        icon: 'pi pi-fw pi-ticket',
+        routerLink: [RoutesUtil.Voucher.url()],
+      },
     ];
   }
 }

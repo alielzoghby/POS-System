@@ -7,4 +7,5 @@ export enum URLSegment {
   Products = 'products/',
   Orders = 'orders/',
   Configuration = 'configration/',
+  Vouchers = 'vouchers/',
 }

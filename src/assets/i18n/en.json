@@ -105,7 +105,8 @@
     "search": "Search...",
     "chooseAnImage": "Choose an image",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "print": "Print"
   },
   "configuration": {
     "title": "Configuration",
@@ -145,5 +146,20 @@
     "LOW_STOCK": "Low Stock",
     "createProduct": "Create Product",
     "editProduct": "Edit Product"
+  },
+  "voucher": {
+    "title": "Vouchers",
+    "createTitle": "Create Voucher",
+    "editTitle": "Edit Voucher",
+    "reference": "Reference",
+    "amount": "Amount",
+    "percentage": "Percentage",
+    "type": "Type",
+    "deleteTitle": "Delete Voucher",
+    "deleteMessage": "Are you sure you want to delete voucher '{{name}}'?",
+    "print": "Print",
+    "enjoy": "Enjoy Your Gift",
+    "Coupon": "Coupon",
+    "off": "OFF"
   }
 }

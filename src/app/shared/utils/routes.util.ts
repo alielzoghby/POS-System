@@ -32,4 +32,8 @@ export class RoutesUtil {
 
   // Configuration
   static Configuration = new RouteConfig('Configuration');
+
+  // static Voucher = new RouteConfig('voucher');
+  static Voucher = new RouteConfig('voucher');
+  static VoucherList = new RouteConfig('list', RoutesUtil.Voucher);
 }

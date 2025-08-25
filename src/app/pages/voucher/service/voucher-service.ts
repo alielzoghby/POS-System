@@ -15,6 +15,12 @@ export class VoucherService {
     private mapper: Mapper
   ) {}
 
+  getVoucher(search: string): Observable<Voucher> {
+    return this.baseAPI
+      .get(ApiConstant.GET_VOUCHERS, { params: { search } })
+      .pipe(map((res) => this.mapper.fromJson(Voucher, res.data.vouchers[0])));
+  }
+
   getVouchers(body?: { page: number; limit: number; search: string }): Observable<VoucherList> {
     return this.baseAPI
       .get(ApiConstant.GET_VOUCHERS, { params: body })

@@ -32,6 +32,7 @@ import { StateSectionComponent } from '@/shared/component/state-section/state-se
             {{ 'configuration.title' | translate }}
           </h2>
         </div>
+
         <form [formGroup]="form" (ngSubmit)="onSave()" class="row g-3">
           <div class="col-md-6">
             <label for="tax" class="form-label fw-bold">

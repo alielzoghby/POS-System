@@ -78,7 +78,6 @@
 .state-section {
   position: relative;
   border-radius: 12px;
-  color: white;
 
   &__loading {
     position: absolute;
@@ -122,10 +121,6 @@
 
   &__loading-transparent-content {
     opacity: 0.4;
-  }
-
-  &__content {
-    color: black;
   }
 
   &__content.fade-in {

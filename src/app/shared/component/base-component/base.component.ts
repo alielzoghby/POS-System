@@ -108,7 +108,7 @@ export class BaseComponent<Filters = any> implements OnDestroy {
     this.sectionState =
       extra && extra.isLoadingTransparent
         ? SectionStateStatus.LoadingTransparent
-        : SectionStateStatus.Loading;
+        : SectionStateStatus.LoadingTransparent; // need to remove
 
     if (typeof extra?.startWith === 'function') {
       extra.startWith();

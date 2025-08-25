@@ -1,10 +1,16 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TranslateModule } from '@ngx-translate/core';
 import { HttpClient } from '@angular/common/http';
+import { BaseComponent } from '@/shared/component/base-component/base.component';
+import { VoucherService } from '@/pages/voucher/service/voucher-service';
+import { SectionStateStatus } from '@/shared/enums/section-state-status.enum';
+import { ConfigurationService } from '@/pages/configuration/service/configuration-service';
+import { V } from 'node_modules/@angular/cdk/overlay-module.d-C2CxnwqT';
+import { Voucher } from '@/pages/voucher/models/voucher.model';
 
 @Component({
   selector: 'app-pos-summary',
@@ -44,8 +50,21 @@ import { HttpClient } from '@angular/common/http';
             </button>
           </div>
 
+          <!-- Card Reference -->
+          <div *ngIf="paymentMethod === 'CARD'" class="mt-3">
+            <label class="block text-lg font-semibold">{{
+              'POS.CARD_REFERENCE' | translate
+            }}</label>
+            <input
+              pInputText
+              [(ngModel)]="cardReference"
+              class="w-full text-lg p-4 border-2 rounded-xl"
+              placeholder="REF123"
+            />
+          </div>
+
           <!-- Voucher Code -->
-          <div *ngIf="paymentMethod === 'VOUCHER'" class="mt-3 ">
+          <div class="mt-3">
             <div class="flex items-end gap-4">
               <div class="w-full">
                 <label class="block text-lg font-semibold">{{
@@ -63,54 +82,48 @@ import { HttpClient } from '@angular/common/http';
                 type="button"
                 label="{{ 'POS.VALIDATE' | translate }}"
                 icon="pi pi-search"
-                class="p-button p-button-primary rounded-lg"
-                [loading]="loading"
+                class="p-button p-button-primary rounded-lg px-2"
+                [loading]="sectionState === SectionStateStatus.Loading"
                 iconPos="right"
                 (click)="verifyVoucher()"
               ></button>
             </div>
-            <div *ngIf="voucherDiscount > 0" class="text-green-700 font-bold text-lg">
-              {{ 'POS.VOUCHER_DISCOUNT' | translate }}: -{{ voucherDiscount | currency }}
+            <div *ngIf="appliedVoucher" class="text-green-700 font-bold text-lg mt-1">
+              {{ 'POS.VOUCHER_DISCOUNT' | translate }}:
+              <span *ngIf="appliedVoucher?.amount">-{{ voucherDiscount | currency }}</span>
+              <span *ngIf="appliedVoucher?.percentage">-{{ appliedVoucher.percentage }}%</span>
             </div>
-            <div *ngIf="voucherInvalid" class="text-red-500 text-lg font-medium">
+
+            <div *ngIf="voucherInvalid" class="text-red-500 text-lg font-medium mt-1">
               {{ 'POS.INVALID_VOUCHER' | translate }}
             </div>
-          </div>
-
-          <!-- Card Reference -->
-          <div *ngIf="paymentMethod === 'CARD'" class="mt-3">
-            <label class="block text-lg font-semibold">{{
-              'POS.CARD_REFERENCE' | translate
-            }}</label>
-            <input
-              pInputText
-              [(ngModel)]="cardReference"
-              class="w-full text-lg p-4 border-2 rounded-xl"
-              placeholder="REF123"
-            />
           </div>
         </div>
 
         <!-- Totals Section -->
-        <div class="grid grid-cols-2 gap-2 border-t border-gray-300 pt-6 mt-3 text-xl font-medium">
+        <div class="grid grid-cols-2 gap-2 border-t border-gray-300 pt-3  text-xl font-medium">
           <div>{{ 'POS.SUBTOTAL' | translate }}</div>
           <div>{{ subtotal | currency }}</div>
           <div>{{ 'POS.TIP' | translate }}</div>
           <div>{{ selectedTip | currency }}</div>
           <div>{{ 'POS.TAX' | translate }}</div>
-          <div>{{ taxAmount | currency }}</div>
-          <div *ngIf="voucherDiscount > 0" class="text-green-600">
+          <div>{{ taxRate }}% ({{ taxAmount | currency }})</div>
+          <div *ngIf="appliedVoucher" class="text-green-600">
             {{ 'POS.VOUCHER_DISCOUNT' | translate }}
           </div>
-          <div *ngIf="voucherDiscount > 0" class="text-green-600">
-            -{{ voucherDiscount | currency }}
+          <div *ngIf="appliedVoucher" class="text-green-600">
+            <span *ngIf="appliedVoucher?.amount">-{{ voucherDiscount | currency }}</span>
+            <span *ngIf="appliedVoucher?.percentage"
+              >-{{ appliedVoucher.percentage }}%
+              <span *ngIf="voucherDiscount">({{ voucherDiscount | currency }})</span>
+            </span>
           </div>
           <div class="font-bold text-2xl">{{ 'POS.TOTAL' | translate }}</div>
-          <div class="font-bold text-2xl text-red-700">{{ total | currency }}</div>
+          <div class="font-bold text-2xl text-primary">{{ total | currency }}</div>
         </div>
 
         <!-- Payment -->
-        <div class="grid grid-cols-2 gap-6 mt-3 text-xl">
+        <div class="grid grid-cols-2 gap-3 mt-2 text-xl">
           <label class="font-semibold">{{ 'POS.CUSTOMER_PAID' | translate }}</label>
           <input
             pInputText
@@ -119,7 +132,9 @@ import { HttpClient } from '@angular/common/http';
             class="text-xl p-4 border-2 rounded-xl"
           />
           <label class="font-semibold">{{ 'POS.CHANGE' | translate }}</label>
-          <div class="text-green-700 font-bold">{{ change | currency }}</div>
+          <div class="text-green-700 font-bold" [ngClass]="{ 'text-red-700': change < 0 }">
+            {{ change | currency }}
+          </div>
         </div>
       </div>
 
@@ -135,32 +150,49 @@ import { HttpClient } from '@angular/common/http';
     </div>
   `,
 })
-export class PosSummaryComponent {
+export class PosSummaryComponent extends BaseComponent {
   @Input() subtotal = 0;
   @Input() taxRate = 0.14;
   @Output() checkout = new EventEmitter<any>();
 
   tipOptions = [0, 5, 10, 15, 20];
   selectedTip = 0;
-  loading = false;
 
-  paymentMethods: { label: string; value: 'CASH' | 'CARD' | 'VOUCHER' }[] = [
+  paymentMethods: { label: string; value: 'CASH' | 'CARD' }[] = [
     { label: 'POS.PAYMENT_CASH', value: 'CASH' },
     { label: 'POS.PAYMENT_CARD', value: 'CARD' },
-    { label: 'POS.PAYMENT_VOUCHER', value: 'VOUCHER' },
   ];
-  paymentMethod: 'CASH' | 'CARD' | 'VOUCHER' = 'CASH';
+  paymentMethod: 'CASH' | 'CARD' = 'CASH';
 
   customerPaid = 0;
   voucherCode = '';
   voucherDiscount = 0;
   voucherInvalid = false;
+  appliedVoucher!: Voucher;
+
   cardReference = '';
 
-  constructor(private http: HttpClient) {}
+  protected SectionStateStatus = SectionStateStatus;
+
+  constructor(
+    private configurationService: ConfigurationService,
+    private voucherService: VoucherService
+  ) {
+    super();
+  }
+
+  ngOnInit(): void {
+    this.getTax();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['subtotal']) {
+      this.calculateVoucherDiscount();
+    }
+  }
 
   get taxAmount() {
-    return this.subtotal * this.taxRate;
+    return (this.subtotal * this.taxRate) / 100;
   }
 
   get total() {
@@ -175,31 +207,56 @@ export class PosSummaryComponent {
     this.selectedTip = tip;
   }
 
-  selectPaymentMethod(method: 'CASH' | 'CARD' | 'VOUCHER') {
+  selectPaymentMethod(method: 'CASH' | 'CARD') {
     this.paymentMethod = method;
     // Reset related fields
-    if (method !== 'VOUCHER') {
-      this.voucherCode = '';
-      this.voucherDiscount = 0;
-      this.voucherInvalid = false;
-    }
     if (method !== 'CARD') {
       this.cardReference = '';
     }
   }
 
+  getTax() {
+    this.load(this.configurationService.getConfiguration()).subscribe((res) => {
+      this.taxRate = res.tax;
+    });
+  }
+
   verifyVoucher() {
-    // Simulated API call
-    this.http.get<{ discount: number }>(`/api/voucher/${this.voucherCode}`).subscribe({
-      next: (res) => {
-        this.voucherDiscount = res.discount;
-        this.voucherInvalid = false;
-      },
-      error: () => {
+    this.load(this.voucherService.getVoucher(this.voucherCode)).subscribe(
+      (res) => {
+        this.appliedVoucher = res;
+
+        if (res) {
+          if (res.amount) {
+            this.voucherDiscount = res.amount;
+          } else if (res.percentage) {
+            this.voucherDiscount = (this.subtotal * res.percentage) / 100;
+          } else {
+            this.voucherDiscount = 0;
+            this.voucherInvalid = true;
+            return;
+          }
+          this.voucherInvalid = false;
+          return;
+        }
         this.voucherDiscount = 0;
         this.voucherInvalid = true;
       },
-    });
+      () => {
+        this.voucherDiscount = 0;
+        this.voucherInvalid = true;
+      }
+    );
+  }
+
+  calculateVoucherDiscount() {
+    if (this.appliedVoucher) {
+      if (this.appliedVoucher.amount) {
+        this.voucherDiscount = this.appliedVoucher.amount;
+      } else if (this.appliedVoucher.percentage) {
+        this.voucherDiscount = (this.subtotal * this.appliedVoucher.percentage) / 100;
+      }
+    }
   }
 
   onCheckout() {

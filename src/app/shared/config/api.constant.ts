@@ -37,4 +37,8 @@ export class ApiConstant {
   static DELETE_VOUCHER = ApiConstant.URL_BASE + URLSegment.Vouchers + '{id}';
 
   static CREATE_ORDER = ApiConstant.URL_BASE + URLSegment.Orders + 'with-products/';
+  static GET_ORDER = ApiConstant.URL_BASE + URLSegment.Orders + '{id}';
+  static GET_ORDERS = ApiConstant.URL_BASE + URLSegment.Orders;
+  static UPDATE_ORDER = ApiConstant.URL_BASE + URLSegment.Orders + '{id}';
+  static DELETE_ORDER = ApiConstant.URL_BASE + URLSegment.Orders + '{id}';
 }

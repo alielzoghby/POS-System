@@ -80,11 +80,7 @@ import JsBarcode from 'jsbarcode';
           <span *ngIf="order.voucher.amount">-{{ order.voucher.amount | currency }}</span>
           <span *ngIf="order.voucher.percentage"
             >-{{ order.voucher.percentage }}%
-            <span
-              >({{
-                ((order.voucher.amount || 0) * (order.voucher.percentage || 0)) / 100 | currency
-              }})</span
-            >
+            <span>({{ order.discounted || 0 | currency }})</span>
           </span>
         </div>
 

@@ -3,10 +3,9 @@ import { PosSummaryComponent } from '../components/app.pos-summary.component';
 import { PosProductTableComponent } from '../components/app.pos-products-table.component';
 import { ProductModel } from '@/pages/products/models/product.model';
 import { BaseComponent } from '@/shared/component/base-component/base.component';
-import { OrderModel } from '../model/order.model';
-import { OrderService } from '../services/order.service';
+import { OrderService } from '../../orders/services/order.service';
 import { MatDialog } from '@angular/material/dialog';
-import { OrderCreatedDialogComponent } from '../components/receipt-dialog';
+import { OrderCreatedDialogComponent } from '../../orders/components/receipt-dialog';
 
 @Component({
   selector: 'app-dashboard',

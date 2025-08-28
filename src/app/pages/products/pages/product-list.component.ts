@@ -20,6 +20,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { ProductDialogComponent } from '../component/product-dialog.component';
 import { D } from 'node_modules/@angular/cdk/bidi-module.d-IN1Vp56w';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
+import {
+  ConfirmDialogComponent,
+  ConfirmDialogData,
+  ConfirmDialogSeverity,
+} from '@/shared/component/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-product-list',
@@ -195,6 +200,13 @@ export class ProductListComponent extends BaseComponent {
       });
   }
 
+  /*************  ✨ Windsurf Command ⭐  *************/
+  /**
+   * Gets the severity of a product status
+   * @param status The product status
+   * @returns The severity of the product status
+   */
+  /*******  5ad40d6c-5b48-492d-b1cb-7f186bee1f39  *******/
   getStatusSeverity(status: ProductStatus): string {
     switch (status) {
       case ProductStatus.InStock:
@@ -269,17 +281,50 @@ export class ProductListComponent extends BaseComponent {
   }
 
   deleteProduct(product: ProductModel) {
-    this.load(this.productService.deleteProduct([product.product_id || ''])).subscribe(() => {
-      this.getProducts();
+    const data: ConfirmDialogData = {
+      title: this.translate('product.deleteTitle'),
+      message: this.translate('product.deleteMessage', {
+        name: product.name || product.product_id,
+      }),
+      confirmText: this.translate('common.delete'),
+      cancelText: this.translate('common.cancel'),
+      severity: ConfirmDialogSeverity.DANGER,
+    };
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, { data });
+
+    dialogRef.afterClosed().subscribe((confirm) => {
+      if (confirm) {
+        const productId = product.product_id ? [product.product_id] : [];
+        this.load(this.productService.deleteProduct(productId)).subscribe(() => {
+          this.getProducts();
+        });
+      }
     });
   }
 
   deleteSelectedProducts() {
-    if (this.selectedProducts.length === 0) return;
+    if (!this.selectedProducts || this.selectedProducts.length === 0) return;
 
+    const productNames = this.selectedProducts.map((p) => p.name || p.product_id).join(', ');
     const productIds = this.selectedProducts.map((p) => p.product_id || '');
-    this.load(this.productService.deleteProduct(productIds)).subscribe(() => {
-      this.getProducts();
+
+    const data: ConfirmDialogData = {
+      title: this.translate('product.deleteTitle'),
+      message: this.translate('product.deleteMessage', { name: productNames }),
+      confirmText: this.translate('common.delete'),
+      cancelText: this.translate('common.cancel'),
+      severity: ConfirmDialogSeverity.DANGER,
+    };
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, { data });
+
+    dialogRef.afterClosed().subscribe((confirm) => {
+      if (confirm) {
+        this.load(this.productService.deleteProduct(productIds)).subscribe(() => {
+          this.getProducts();
+        });
+      }
     });
   }
 }

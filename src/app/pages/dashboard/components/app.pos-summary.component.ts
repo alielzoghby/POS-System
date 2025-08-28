@@ -261,6 +261,7 @@ export class PosSummaryComponent extends BaseComponent {
             return;
           }
           this.voucherInvalid = false;
+          this.calculateVoucherDiscount();
           return;
         }
         this.voucherDiscount = 0;
@@ -278,7 +279,11 @@ export class PosSummaryComponent extends BaseComponent {
       if (this.appliedVoucher.amount) {
         this.voucherDiscount = this.appliedVoucher.amount;
       } else if (this.appliedVoucher.percentage) {
-        this.voucherDiscount = (this.subtotal * this.appliedVoucher.percentage) / 100;
+        console.log('====================================');
+        console.log(this.subtotal + this.taxAmount);
+        console.log('====================================');
+        this.voucherDiscount =
+          ((this.subtotal + this.taxAmount) * this.appliedVoucher.percentage) / 100;
       }
     }
   }

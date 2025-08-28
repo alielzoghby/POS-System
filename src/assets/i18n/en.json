@@ -163,7 +163,9 @@
     "PACK": "Pack",
     "BOX": "Box",
     "BOTTLE": "Bottle",
-    "selectUnit": "Select Unit"
+    "selectUnit": "Select Unit",
+    "deleteTitle": "Delete Product",
+    "deleteMessage": "Are you sure you want to delete the product(s): {{name}}?"
   },
   "voucher": {
     "title": "Vouchers",
@@ -210,6 +212,34 @@
     "createdMessage": "Your order has been created successfully and the receipt is ready.",
     "newOrder": "New Order",
     "printReceipt": "Print Receipt",
-    "printReceiptAgain": "Print Receipt Again"
+    "printReceiptAgain": "Print Receipt Again",
+    "ordersList": "Orders List",
+    "Reference": "Reference",
+    "SubTotal": "Subtotal",
+    "due": "Due",
+    "paid": "Paid",
+    "voucher": "Voucher",
+    "totalPrice": "Total Price",
+    "status": "Status",
+    "payment": "Payment",
+    "createdBy": "Created By",
+    "products": "Products",
+    "createdAt": "Created At",
+    "noVoucher": "No Voucher",
+    "PAID": "Paid",
+    "IN_PROGRESS": "In Progress",
+    "tax": "Tax",
+    "tip": "Tip",
+    "searchPlaceholder": "Search Orders",
+    "deleteTitle": "Delete Order",
+    "deleteMessage": "Are you sure you want to delete order: {{name}}?"
+  },
+  "ordersAnalysis": {
+    "totalSubTotal": "Total Subtotal",
+    "totalDiscounted": "Total Discounted",
+    "totalDue": "Total Due",
+    "totalTaxAmount": "Total Tax Amount",
+    "totalTip": "Total Tip",
+    "totalTotalPrice": "Total Total Price"
   }
 }

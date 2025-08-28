@@ -60,6 +60,12 @@ export class AppMenu extends BaseComponent {
         icon: 'pi pi-fw pi-ticket',
         routerLink: [RoutesUtil.Voucher.url()],
       },
+      {
+        label: this.translate('Orders'),
+        icon: 'pi pi-fw pi-shopping-cart',
+        routerLink: [RoutesUtil.Order.url()],
+        visible: this.userRoleService.isUserHasRoles(RolesConstants.EDIT_SHOW_ORDERS),
+      }
     ];
   }
 }

@@ -36,4 +36,9 @@ export class RoutesUtil {
   // static Voucher = new RouteConfig('voucher');
   static Voucher = new RouteConfig('voucher');
   static VoucherList = new RouteConfig('list', RoutesUtil.Voucher);
+
+  //static Order = new RouteConfig('order');
+  static Order = new RouteConfig('order');
+  static OrderList = new RouteConfig('list', RoutesUtil.Order);
+
 }

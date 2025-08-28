@@ -3,6 +3,7 @@ import { User } from '@/shared/models/user.model';
 import { Expose } from 'class-transformer';
 import { PaidStatus } from '../enums/paid_status.enum';
 import { Voucher } from '@/pages/voucher/models/voucher.model';
+import { Pagination } from './../../../shared/models/list';
 
 export class Order {
   @Expose()
@@ -31,6 +32,9 @@ export class Order {
 
   @Expose()
   payment_reference?: string | null;
+
+  @Expose()
+  discounted?: number;
 
   @Expose()
   created_at?: Date;
@@ -67,4 +71,19 @@ export class Order {
     price: number;
     product: Pick<ProductModel, 'product_id' | 'name' | 'reference'>;
   }>;
+}
+
+export class OrderAnalysis {
+  @Expose() totalSubTotal!: number;
+  @Expose() totalDue!: number;
+  @Expose() totalTip!: number;
+  @Expose() totalTaxAmount!: number;
+  @Expose() totalTotalPrice!: number;
+  @Expose() totalDiscounted!: number;
+}
+
+export class OrderList {
+  @Expose() orders!: Order[];
+  @Expose() pagination!: Pagination;
+  @Expose() analysis!: OrderAnalysis;
 }

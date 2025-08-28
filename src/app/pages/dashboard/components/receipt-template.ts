@@ -73,6 +73,21 @@ import JsBarcode from 'jsbarcode';
           <span>{{ 'receipt.tax' | translate: { tax: order.tax } }}</span>
           <span>{{ ((order.sub_total || 0) * (order.tax || 0)) / 100 | currency }}</span>
         </div>
+
+        <div *ngIf="order.voucher" class="flex justify-between font-bold uppercase">
+          <span>{{ 'receipt.voucher' | translate }}</span>
+
+          <span *ngIf="order.voucher.amount">-{{ order.voucher.amount | currency }}</span>
+          <span *ngIf="order.voucher.percentage"
+            >-{{ order.voucher.percentage }}%
+            <span
+              >({{
+                ((order.voucher.amount || 0) * (order.voucher.percentage || 0)) / 100 | currency
+              }})</span
+            >
+          </span>
+        </div>
+
         <div class="flex justify-between font-bold uppercase">
           <span>{{ 'receipt.total' | translate }}</span>
           <span>{{ order.total_price | currency }}</span>
@@ -81,6 +96,7 @@ import JsBarcode from 'jsbarcode';
           <span>{{ order.payment_method }}</span>
           <span>{{ order.paid | currency }}</span>
         </div>
+
         <div class="flex justify-between uppercase">
           <span>{{ 'receipt.change' | translate }}</span>
           <span>{{ (order.paid || 0) - (order.total_price || 0) | currency }}</span>

@@ -202,7 +202,8 @@
     "feedbackMessage": "Thank you for your purchase! We appreciate your trust in us and hope your experience was excellent.",
     "product": "Product",
     "quantity": "Quantity",
-    "price": "Price"
+    "price": "Price",
+    "voucher": "Voucher"
   },
   "orders": {
     "createdSuccess": "Order Created Successfully",

@@ -2,6 +2,7 @@ import { ProductModel } from '@/pages/products/models/product.model';
 import { User } from '@/shared/models/user.model';
 import { Expose } from 'class-transformer';
 import { PaidStatus } from '../enums/paid_status.enum';
+import { Voucher } from '@/pages/voucher/models/voucher.model';
 
 export class Order {
   @Expose()
@@ -24,6 +25,9 @@ export class Order {
 
   @Expose()
   voucher_reference?: string | null;
+
+  @Expose()
+  voucher?: Voucher;
 
   @Expose()
   payment_reference?: string | null;

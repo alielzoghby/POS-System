@@ -1,4 +1,5 @@
 import { Expose } from 'class-transformer';
+import { ProductUnit } from '../enums/product-unit.enum';
 import { CategoryModel } from './../../categories/model/category.model';
 import { Pagination } from '@/shared/models/list';
 
@@ -9,6 +10,17 @@ export enum ProductStatus {
 }
 
 export class ProductModel {
+  @Expose()
+  show_online?: boolean;
+
+  @Expose()
+  unit?: ProductUnit;
+
+  @Expose()
+  unit_value?: number;
+
+  @Expose()
+  unit_price?: number;
   @Expose()
   product_id?: string;
 

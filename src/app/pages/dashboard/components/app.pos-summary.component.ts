@@ -9,7 +9,7 @@ import { BaseComponent } from '@/shared/component/base-component/base.component'
 import { VoucherService } from '@/pages/voucher/service/voucher-service';
 import { SectionStateStatus } from '@/shared/enums/section-state-status.enum';
 import { ConfigurationService } from '@/pages/configuration/service/configuration-service';
-import { V } from 'node_modules/@angular/cdk/overlay-module.d-C2CxnwqT';
+import { n, V } from 'node_modules/@angular/cdk/overlay-module.d-C2CxnwqT';
 import { Voucher } from '@/pages/voucher/models/voucher.model';
 
 @Component({
@@ -125,12 +125,19 @@ import { Voucher } from '@/pages/voucher/models/voucher.model';
         <!-- Payment -->
         <div class="grid grid-cols-2 gap-3 mt-2 text-xl">
           <label class="font-semibold">{{ 'POS.CUSTOMER_PAID' | translate }}</label>
-          <input
-            pInputText
-            type="number"
-            [(ngModel)]="customerPaid"
-            class="text-xl p-4 border-2 rounded-xl"
-          />
+          <div>
+            <input
+              pInputText
+              type="number"
+              [(ngModel)]="customerPaid"
+              class="text-xl p-4 border-2 rounded-xl"
+              (ngModelChange)="onCustomerPaidChange($event)"
+            />
+            <div *ngIf="customerPaidError" class="text-red-500 text-sm mt-1">
+              {{ customerPaidError }}
+            </div>
+          </div>
+
           <label class="font-semibold">{{ 'POS.CHANGE' | translate }}</label>
           <div class="text-green-700 font-bold" [ngClass]="{ 'text-red-700': change < 0 }">
             {{ change | currency }}
@@ -171,6 +178,8 @@ export class PosSummaryComponent extends BaseComponent {
   appliedVoucher!: Voucher;
 
   cardReference = '';
+
+  customerPaidError: string | null = null;
 
   protected SectionStateStatus = SectionStateStatus;
 
@@ -221,10 +230,25 @@ export class PosSummaryComponent extends BaseComponent {
     });
   }
 
+  onCustomerPaidChange(value: number) {
+    this.customerPaid = value;
+    if (value && value > 0) {
+      this.customerPaidError = null;
+    } else if (!value && this.subtotal > 0 && !this.appliedVoucher) {
+      this.customerPaidError = this.translate('POS.CUSTOMER_PAID_REQUIRED');
+    }
+  }
+
   verifyVoucher() {
     this.load(this.voucherService.getVoucher(this.voucherCode)).subscribe(
       (res) => {
-        if (res && this.voucherCode) {
+        if (
+          res &&
+          this.voucherCode &&
+          res.active &&
+          res.expired_at &&
+          new Date(res.expired_at) > new Date()
+        ) {
           this.appliedVoucher = res;
 
           if (res.amount) {
@@ -260,6 +284,12 @@ export class PosSummaryComponent extends BaseComponent {
   }
 
   onCheckout() {
+    this.customerPaidError = null;
+    if ((!this.customerPaid || this.customerPaid <= 0) && !this.appliedVoucher) {
+      this.customerPaidError = this.translate('POS.CUSTOMER_PAID_REQUIRED');
+      return;
+    }
+
     this.checkout.emit({
       total: this.total,
       paid: this.customerPaid,
@@ -269,5 +299,15 @@ export class PosSummaryComponent extends BaseComponent {
       voucher: this.voucherCode,
       cardReference: this.cardReference,
     });
+  }
+
+  reset() {
+    this.customerPaid = 0;
+    this.voucherCode = '';
+    this.cardReference = '';
+    this.selectedTip = 0;
+    this.paymentMethod = 'CASH';
+    this.voucherDiscount = 0;
+    this.appliedVoucher = null!;
   }
 }

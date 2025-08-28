@@ -84,15 +84,45 @@ import { Tooltip } from 'primeng/tooltip';
               <th>{{ 'voucher.reference' | translate }}</th>
               <th>{{ 'voucher.percentage' | translate }}</th>
               <th>{{ 'voucher.amount' | translate }}</th>
+              <th>{{ 'voucher.active' | translate }}</th>
+              <th>{{ 'voucher.expiredAt' | translate }}</th>
+              <th>{{ 'voucher.customerDiscount' | translate }}</th>
               <th class="text-end">{{ 'actions' | translate }}</th>
             </tr>
           </ng-template>
 
           <ng-template pTemplate="body" let-voucher>
             <tr>
-              <td>{{ voucher.voucher_refrence || '--' }}</td>
+              <td>{{ voucher.voucher_reference || '--' }}</td>
               <td>{{ voucher.percentage || '--' }} <span *ngIf="voucher.percentage">%</span></td>
               <td>{{ (voucher.amount | number: '1.2-2') || '--' }}</td>
+
+              <!-- Active -->
+              <td>
+                <span
+                  class="px-2 py-1 rounded text-xs font-medium"
+                  [ngClass]="{
+                    'bg-green-100 text-green-700': voucher.active,
+                    'bg-red-100 text-red-700': !voucher.active,
+                  }"
+                >
+                  {{
+                    voucher.active ? ('common.active' | translate) : ('common.inactive' | translate)
+                  }}
+                </span>
+              </td>
+              <!-- Expired At -->
+              <td>
+                {{ voucher.expired_at | date: 'mediumDate' }}
+                <span *ngIf="checkExpired(voucher)" class="text-red-500">
+                  ({{ 'voucher.expired' | translate }})
+                </span>
+              </td>
+
+              <!-- Multiple / Customer Discount -->
+              <td>{{ (voucher.multiple ? 'common.yes' : 'common.no') | translate }}</td>
+
+              <!-- Actions -->
               <td class="text-end">
                 <button
                   pButton
@@ -187,7 +217,7 @@ export class VoucherListComponent extends BaseComponent implements OnInit {
   onDelete(voucher: Voucher) {
     const data: ConfirmDialogData = {
       title: this.translate('voucher.deleteTitle'),
-      message: this.translate('voucher.deleteMessage', { name: voucher.voucher_refrence }),
+      message: this.translate('voucher.deleteMessage', { name: voucher.voucher_reference }),
       confirmText: this.translate('common.delete'),
       cancelText: this.translate('common.cancel'),
       severity: ConfirmDialogSeverity.DANGER,
@@ -210,5 +240,9 @@ export class VoucherListComponent extends BaseComponent implements OnInit {
     this.dialog.open(VoucherPrintComponent, {
       data: { voucher },
     });
+  }
+
+  checkExpired(voucher: Voucher): boolean | undefined {
+    return voucher.expired_at && new Date(voucher.expired_at) < new Date();
   }
 }

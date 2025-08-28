@@ -211,7 +211,7 @@ export class ProductListComponent extends BaseComponent {
   onGlobalFilter(table: any, event: Event) {
     const input = event.target as HTMLInputElement;
     this.globalFilterValue = input.value;
-    this.searchTermSubject.next(this.globalFilterValue);
+    this.searchTermSubject?.next(this.globalFilterValue);
   }
 
   onPageChange(event: any): void {
@@ -230,24 +230,27 @@ export class ProductListComponent extends BaseComponent {
     });
   }
 
-  openNew() {
+  openNew(product?: ProductModel) {
     const dialogRef = this.dialog.open(ProductDialogComponent, {
-      width: '400px',
-      data: {},
+      data: { product },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.load(this.productService.addProduct(result)).subscribe((newProduct) => {
-          this.products.push(newProduct);
-        });
+        this.load(this.productService.addProduct(result)).subscribe(
+          (newProduct) => {
+            this.products.push(newProduct);
+          },
+          (error) => {
+            this.openNew(result);
+          }
+        );
       }
     });
   }
 
   editProduct(product: ProductModel) {
     const dialogRef = this.dialog.open(ProductDialogComponent, {
-      width: '400px',
       data: { product },
     });
 
@@ -256,6 +259,9 @@ export class ProductListComponent extends BaseComponent {
         this.load(this.productService.updateProduct(product.product_id || '', result)).subscribe(
           (updatedProduct) => {
             this.getProducts();
+          },
+          (error) => {
+            this.editProduct(product);
           }
         );
       }

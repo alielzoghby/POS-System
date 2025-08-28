@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { PosSummaryComponent } from '../components/app.pos-summary.component';
 import { PosProductTableComponent } from '../components/app.pos-products-table.component';
 import { ProductModel } from '@/pages/products/models/product.model';
 import { BaseComponent } from '@/shared/component/base-component/base.component';
 import { OrderModel } from '../model/order.model';
 import { OrderService } from '../services/order.service';
+import { MatDialog } from '@angular/material/dialog';
+import { OrderCreatedDialogComponent } from '../components/receipt-dialog';
 
 @Component({
   selector: 'app-dashboard',
@@ -34,10 +36,16 @@ import { OrderService } from '../services/order.service';
   `,
 })
 export class Dashboard extends BaseComponent {
+  @ViewChild(PosProductTableComponent) productTable!: PosProductTableComponent;
+  @ViewChild(PosSummaryComponent) summary!: PosSummaryComponent;
+
   products: ProductModel[] = [];
   subtotal = 0;
 
-  constructor(private orderService: OrderService) {
+  constructor(
+    private orderService: OrderService,
+    private dialog: MatDialog
+  ) {
     super();
   }
 
@@ -74,15 +82,28 @@ export class Dashboard extends BaseComponent {
     const productsWithoutName = this.products.map(({ name, ...rest }) => rest);
 
     const order = {
-      client_id: 1,
-      voucher_refrenc: event.voucher,
-      payment_methoud: event.method,
+      voucher_reference: event.voucher,
+      payment_method: event.method,
       tip: event.tip,
       products: productsWithoutName,
+      paid: event.paid,
     };
 
     this.orderService.createOrder(order).subscribe((response) => {
-      console.log('Order created successfully:', response);
+      const dialogRef = this.dialog.open(OrderCreatedDialogComponent, {
+        data: response,
+      });
+
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result?.action === 'newOrder') {
+          this.products = [];
+          this.calculateTotals();
+
+          // Reset child components
+          if (this.productTable) this.productTable.reset();
+          if (this.summary) this.summary.reset();
+        }
+      });
     });
   }
 }

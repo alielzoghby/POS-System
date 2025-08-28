@@ -33,6 +33,15 @@ import { MessageModule } from 'primeng/message';
       ></p-message>
 
       <p-message
+        *ngIf="control.errors['maxlength']"
+        severity="error"
+        [text]="
+          'formErrors.maxlength'
+            | translate: { requiredLength: control.errors['maxlength'].requiredLength }
+        "
+      ></p-message>
+
+      <p-message
         *ngIf="control.errors['mismatch']"
         severity="error"
         [text]="'formErrors.passwordMismatch' | translate"

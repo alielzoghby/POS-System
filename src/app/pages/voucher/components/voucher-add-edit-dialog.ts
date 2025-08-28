@@ -15,6 +15,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { TranslateModule } from '@ngx-translate/core';
 import { ValidationErrorsComponent } from '@/shared/component/validation-errors/validation-errors.component';
 import { Voucher } from '../models/voucher.model';
+import { Checkbox } from 'primeng/checkbox';
 
 export type VoucherDialogData = {
   mode: 'create' | 'edit';
@@ -34,6 +35,7 @@ export type VoucherDialogData = {
     RadioButtonModule,
     TranslateModule,
     ValidationErrorsComponent,
+    Checkbox,
   ],
   template: `
     <div class="p-4 bg-surface-overlay rounded-xl shadow-md">
@@ -60,17 +62,17 @@ export type VoucherDialogData = {
       <form [formGroup]="form" (ngSubmit)="submit()">
         <!-- Reference -->
         <div class="mb-4">
-          <label for="voucher_refrence" class="block text-sm font-medium mb-1">
+          <label for="voucher_reference" class="block text-sm font-medium mb-1">
             {{ 'voucher.reference' | translate }}
           </label>
           <input
-            id="voucher_refrence"
+            id="voucher_reference"
             pInputText
-            formControlName="voucher_refrence"
+            formControlName="voucher_reference"
             class="w-full"
           />
           <app-validation-errors
-            [control]="form.get('voucher_refrence')"
+            [control]="form.get('voucher_reference')"
             [formGroup]="form"
           ></app-validation-errors>
         </div>
@@ -141,6 +143,51 @@ export type VoucherDialogData = {
           ></app-validation-errors>
         </div>
 
+        <!-- Active -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">
+            {{ 'voucher.active' | translate }}
+          </label>
+          <div class="flex items-center gap-4">
+            <label class="flex items-center gap-2">
+              <p-radioButton formControlName="active" [value]="true"></p-radioButton>
+              {{ 'common.yes' | translate }}
+            </label>
+            <label class="flex items-center gap-2">
+              <p-radioButton formControlName="active" [value]="false"></p-radioButton>
+              {{ 'common.no' | translate }}
+            </label>
+          </div>
+        </div>
+
+        <!-- Expired At -->
+        <div class="mb-4">
+          <label for="expired_at" class="block text-sm font-medium mb-1">
+            {{ 'voucher.expiredAt' | translate }}
+          </label>
+          <input
+            id="expired_at"
+            type="date"
+            formControlName="expired_at"
+            class="w-full p-inputtext"
+          />
+          <app-validation-errors
+            [control]="form.get('expired_at')"
+            [formGroup]="form"
+          ></app-validation-errors>
+        </div>
+
+        <!-- Multiple / Customer Discount -->
+        <div class="mb-4">
+          <label class="block text-sm font-medium mb-1">
+            {{ 'voucher.customerDiscount' | translate }}
+          </label>
+          <div class="flex items-center gap-2">
+            <p-checkbox formControlName="multiple" [binary]="true"> </p-checkbox>
+            <span>{{ 'voucher.multiple' | translate }}</span>
+          </div>
+        </div>
+
         <!-- Actions -->
         <div class="flex justify-end gap-2 mt-4">
           <button
@@ -175,12 +222,24 @@ export class VoucherDialogComponent implements OnInit {
   ngOnInit(): void {
     const v = this.data.voucher;
 
+    const defaultDate = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
+
     this.form = this.fb.group({
-      voucher_refrence: [v?.voucher_refrence ?? ''],
-      type: [v?.amount ? 'amount' : 'percentage', Validators.required],
+      voucher_reference: [v?.voucher_reference ?? '', Validators.maxLength(15)],
+      type: [v?.percentage ? 'percentage' : 'amount', Validators.required],
       amount: [v?.amount ?? 0, Validators.min(0)],
       percentage: [v?.percentage ?? 0, [Validators.min(0), Validators.max(100)]],
+      active: [v?.active ?? true, Validators.required],
+      expired_at: [
+        this.formatDate(v?.expired_at ? new Date(v.expired_at) : defaultDate),
+        Validators.required,
+      ],
+      multiple: [v?.multiple ?? false],
     });
+  }
+
+  private formatDate(date: Date): string {
+    return date.toISOString().split('T')[0]; // yyyy-MM-dd
   }
 
   onTypeChange() {
@@ -199,9 +258,12 @@ export class VoucherDialogComponent implements OnInit {
     if (this.form.valid) {
       const result: Voucher = {
         ...this.data.voucher,
-        voucher_refrence: this.form.value.voucher_refrence || null,
+        voucher_reference: this.form.value.voucher_reference || null,
         amount: this.form.value.type === 'amount' ? this.form.value.amount : null,
         percentage: this.form.value.type === 'percentage' ? this.form.value.percentage : null,
+        active: this.form.value.active,
+        expired_at: new Date(this.form.value.expired_at),
+        multiple: this.form.value.multiple,
       };
       this.dialogRef.close(result);
     }

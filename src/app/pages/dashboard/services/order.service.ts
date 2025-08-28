@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { filterNullEntity } from '@/shared/utils/filter-null-entity.util';
 import { OrderModel } from '../model/order.model';
+import { Order } from '@/pages/orders/models/order.model';
 
 @Injectable({
   providedIn: 'root',
@@ -15,9 +16,9 @@ export class OrderService {
     private mapper: Mapper
   ) {}
 
-  createOrder(body: any): Observable<OrderModel> {
+  createOrder(body: Order): Observable<Order> {
     return this.baseAPI
       .post(ApiConstant.CREATE_ORDER, filterNullEntity(body))
-      .pipe(map((res) => this.mapper.fromJson(OrderModel, res.data)));
+      .pipe(map((res) => this.mapper.fromJson(Order, res.data)));
   }
 }

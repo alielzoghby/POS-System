@@ -42,7 +42,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
               {{ 'voucher.off' | translate }}
             </h2>
             <h3>{{ 'voucher.Coupon' | translate }}</h3>
-            <!-- <small>Valid until May, 2023</small> -->
+            <small
+              >{{ 'voucher.validUntil' | translate }}:
+              {{ data.voucher.expired_at | date: 'longDate' }}</small
+            >
           </div>
         </div>
         <div class="right">
@@ -152,8 +155,8 @@ export class VoucherPrintComponent implements AfterViewInit {
   ) {}
 
   ngAfterViewInit() {
-    if (this.data.voucher?.voucher_refrence) {
-      JsBarcode('#barcode', this.data.voucher.voucher_refrence, {
+    if (this.data.voucher?.voucher_reference) {
+      JsBarcode('#barcode', this.data.voucher.voucher_reference, {
         format: 'CODE128',
         lineColor: '#000',
         width: 2,

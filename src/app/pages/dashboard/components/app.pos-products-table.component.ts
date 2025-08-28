@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
@@ -39,7 +39,9 @@ import { Popover } from 'primeng/popover';
           class="text-xl p-3 border-2 h-[60px] rounded-lg w-full"
           [(ngModel)]="barcode"
           (input)="onSearchInput($event, pop)"
+          (keydown)="onKeyDown($event, pop)"
           placeholder="{{ 'POS.ENTER_BARCODE' | translate }}"
+          #barcodeInput
         />
 
         <button
@@ -57,8 +59,9 @@ import { Popover } from 'primeng/popover';
           <div *ngIf="searchData?.products?.length; else noResults">
             <ul class="list-none m-0 p-0 w-[250px]">
               <li
-                *ngFor="let p of searchData.products"
+                *ngFor="let p of searchData.products; let i = index"
                 (click)="selectProduct(p, pop)"
+                [class.bg-blue-200]="i === selectedIndex"
                 class="p-2 hover:bg-gray-100 cursor-pointer"
               >
                 {{ p.name }} - {{ p.final_price | currency }}
@@ -74,6 +77,7 @@ import { Popover } from 'primeng/popover';
       <!-- Products Table -->
       <div class="flex-1 overflow-auto">
         <p-table
+          stripedRows
           [value]="products"
           scrollable="true"
           scrollHeight="100%"
@@ -134,6 +138,7 @@ export class PosProductTableComponent extends BaseComponent {
   @Input() products: ProductModel[] = [];
   @Output() productRemoved = new EventEmitter<number>();
   @Output() productUpdated = new EventEmitter<void>();
+  @ViewChild('barcodeInput') barcodeInput!: ElementRef;
 
   searchData!: ProductListModel;
   barcode: string = '';
@@ -141,6 +146,8 @@ export class PosProductTableComponent extends BaseComponent {
   loading = false;
   popVisible = false;
   searchSubject = new Subject<string>();
+  selectedProduct!: ProductModel | null;
+  selectedIndex = 0;
 
   constructor(private productService: ProductService) {
     super();
@@ -159,7 +166,17 @@ export class PosProductTableComponent extends BaseComponent {
       .subscribe((res) => {
         this.popVisible = false;
         this.searchData = res;
+
+        if (res.products?.length === 1) {
+          this.selectedProduct = res.products[0];
+        } else {
+          this.selectedProduct = null;
+        }
       });
+  }
+
+  ngAfterViewInit() {
+    this.barcodeInput.nativeElement.focus();
   }
 
   removeProduct(index: number) {
@@ -174,6 +191,7 @@ export class PosProductTableComponent extends BaseComponent {
     const value = event.target.value.trim();
     if (value) {
       this.searchSubject.next(value);
+      this.selectedIndex = 0;
       if (!this.popVisible) {
         pop.show(event);
         this.popVisible = true;
@@ -184,15 +202,58 @@ export class PosProductTableComponent extends BaseComponent {
     }
   }
   selectProduct(product: ProductModel, pop: Popover) {
-    this.products.push({
-      product_id: product.product_id,
-      name: product.name,
-      price: product.final_price,
-      quantity: 1,
-    });
+    const existingProduct = this.products.find((p) => p.product_id === product.product_id);
+
+    if (existingProduct) {
+      existingProduct.quantity = (existingProduct.quantity || 0) + 1;
+    } else {
+      this.products.push({
+        product_id: product.product_id,
+        name: product.name,
+        price: product.final_price,
+        quantity: 1,
+      });
+    }
 
     this.productUpdated.emit();
     pop.hide();
+    this.popVisible = false;
     this.barcode = '';
+
+    const soundSuccess = new Audio('assets/audio/success.mp3');
+    soundSuccess.play();
+  }
+
+  onEnter(pop: Popover) {
+    if (this.selectedProduct) {
+      this.selectProduct(this.selectedProduct, pop);
+    } else {
+      this.onSearchInput({ target: { value: this.barcode } }, pop);
+      const soundError = new Audio('src/assets/audio/fail.mp3');
+      soundError.play();
+    }
+  }
+
+  onKeyDown(event: KeyboardEvent, pop: Popover) {
+    if (!this.searchData?.products?.length) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.selectedIndex = (this.selectedIndex + 1) % this.searchData.products.length;
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.selectedIndex =
+        (this.selectedIndex - 1 + this.searchData.products.length) %
+        this.searchData.products.length;
+    } else if (event.key === 'Enter') {
+      event.preventDefault();
+      this.selectProduct(this.searchData.products[this.selectedIndex], pop);
+    }
+  }
+
+  reset() {
+    this.products = [];
+    this.barcode = '';
+    this.barcodeInput.nativeElement.focus();
   }
 }

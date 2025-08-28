@@ -62,7 +62,8 @@
     "REFERENCE_CODE": "Card Reference",
     "ACTIONS": "Actions",
     "ADD": "Add",
-    "ENTER_BARCODE": "Enter Barcode"
+    "ENTER_BARCODE": "Enter Barcode",
+    "CUSTOMER_PAID_REQUIRED": "Customer paid is required"
   },
   "profile": {
     "editProfile": "Edit Profile",
@@ -106,7 +107,11 @@
     "chooseAnImage": "Choose an image",
     "error": "Error",
     "success": "Success",
-    "print": "Print"
+    "print": "Print",
+    "active": "Active",
+    "inactive": "Inactive",
+    "yes": "Yes",
+    "no": "No"
   },
   "configuration": {
     "title": "Configuration",
@@ -117,7 +122,8 @@
     "required": "This field is required",
     "email": "Please enter a valid email address",
     "minlength": "Minimum length is {{requiredLength}} characters",
-    "passwordMismatch": "Passwords do not match"
+    "passwordMismatch": "Passwords do not match",
+    "maxlength": "Maximum length is {{requiredLength}} characters"
   },
   "category": {
     "title": "Category Management",
@@ -145,7 +151,19 @@
     "OUT_OF_STOCK": "Out of Stock",
     "LOW_STOCK": "Low Stock",
     "createProduct": "Create Product",
-    "editProduct": "Edit Product"
+    "editProduct": "Edit Product",
+    "unit": "Unit",
+    "unitValue": "Unit Value",
+    "unitPrice": "Unit Price",
+    "showOnline": "Show Online",
+    "showUnitConfigurationSection": "Show Unit Configuration Section",
+    "unitSection": "Unit Section",
+    "PIECE": "Piece",
+    "KILOGRAM": "Kilogram",
+    "PACK": "Pack",
+    "BOX": "Box",
+    "BOTTLE": "Bottle",
+    "selectUnit": "Select Unit"
   },
   "voucher": {
     "title": "Vouchers",
@@ -160,6 +178,37 @@
     "print": "Print",
     "enjoy": "Enjoy Your Gift",
     "Coupon": "Coupon",
-    "off": "OFF"
+    "off": "OFF",
+    "validUntil": "Valid Until",
+    "active": "Active",
+    "expiredAt": "Expired At",
+    "customerDiscount": "Customer Discount",
+    "multiple": "Allow multiple use",
+    "expired": "Expired"
+  },
+  "receipt": {
+    "store": "Store",
+    "helpedBy": "Helped by",
+    "surveyId": "Survey ID",
+    "paymentDetails": "Payment Details",
+    "barcode": "Barcode",
+    "feedback": "Feedback",
+    "Subtotal": "Subtotal",
+    "tax": "HI {{tax}} TAX",
+    "total": "Total",
+    "change": "Change",
+    "returnPolicy": "Returns with receipt, subject to {{storeName}} Return Policy, within 14 days of purchase.",
+    "refundMessage": "Refund amount is based on the price after all coupons and discounts.",
+    "feedbackMessage": "Thank you for your purchase! We appreciate your trust in us and hope your experience was excellent.",
+    "product": "Product",
+    "quantity": "Quantity",
+    "price": "Price"
+  },
+  "orders": {
+    "createdSuccess": "Order Created Successfully",
+    "createdMessage": "Your order has been created successfully and the receipt is ready.",
+    "newOrder": "New Order",
+    "printReceipt": "Print Receipt",
+    "printReceiptAgain": "Print Receipt Again"
   }
 }

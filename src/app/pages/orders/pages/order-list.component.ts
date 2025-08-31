@@ -257,8 +257,8 @@ export class OrderListComponent extends BaseComponent {
     };
 
     if (this.rangeDates.length === 2) {
-      filters.startDate = this.rangeDates[0].toISOString();
-      filters.endDate = this.rangeDates[1].toISOString();
+      filters.startDate = this.rangeDates[0]?.toISOString();
+      filters.endDate = this.rangeDates[1]?.toISOString();
     }
 
     this.load(this.orderService.getOrders(filters)).subscribe((res) => {

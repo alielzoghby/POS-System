@@ -5,7 +5,7 @@ import { ProductModel } from '@/pages/products/models/product.model';
 import { BaseComponent } from '@/shared/component/base-component/base.component';
 import { OrderService } from '../../orders/services/order.service';
 import { MatDialog } from '@angular/material/dialog';
-import { OrderCreatedDialogComponent } from '../../orders/components/receipt-dialog';
+import { OrderCreatedDialogComponent } from '../components/receipt-dialog';
 
 @Component({
   selector: 'app-dashboard',
@@ -81,7 +81,7 @@ export class Dashboard extends BaseComponent {
     const productsWithoutName = this.products.map(({ name, ...rest }) => rest);
 
     const order = {
-      voucher_reference: event.voucher,
+      voucher_reference: event.voucher.trim(),
       payment_method: event.method,
       tip: event.tip,
       products: productsWithoutName,

@@ -36,7 +36,7 @@ export class OrderService {
     endDate: Date;
   }): Observable<OrderList> {
     return this.baseAPI
-      .get(ApiConstant.GET_ORDERS, { params: body })
+      .get(ApiConstant.GET_ORDERS, { params: filterNullEntity(body) })
       .pipe(map((res) => this.mapper.fromJson(OrderList, res.data)));
   }
 

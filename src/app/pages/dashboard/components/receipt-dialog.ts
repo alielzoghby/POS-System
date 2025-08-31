@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { TranslateModule } from '@ngx-translate/core';
 import { Order } from '@/pages/orders/models/order.model';
-import { ReceiptTemplateComponent } from './receipt-template';
+import { ReceiptTemplateComponent } from '@/pages/orders/components/receipt-template';
 @Component({
   selector: 'app-order-created-dialog',
   standalone: true,
@@ -15,14 +15,6 @@ import { ReceiptTemplateComponent } from './receipt-template';
         <h2 class="text-xl font-semibold text-green-600">
           {{ 'orders.createdSuccess' | translate }}
         </h2>
-        <button
-          pButton
-          icon="pi pi-times"
-          class="p-button-rounded p-button-text p-button-sm"
-          (click)="dialogRef.close()"
-          type="button"
-          aria-label="Close"
-        ></button>
       </div>
 
       <!-- ✅ Success Message -->

@@ -240,7 +240,7 @@ export class PosSummaryComponent extends BaseComponent {
   }
 
   verifyVoucher() {
-    this.load(this.voucherService.getVoucher(this.voucherCode)).subscribe(
+    this.load(this.voucherService.getVoucher(this.voucherCode.trim())).subscribe(
       (res) => {
         if (
           res &&
@@ -279,9 +279,6 @@ export class PosSummaryComponent extends BaseComponent {
       if (this.appliedVoucher.amount) {
         this.voucherDiscount = this.appliedVoucher.amount;
       } else if (this.appliedVoucher.percentage) {
-        console.log('====================================');
-        console.log(this.subtotal + this.taxAmount);
-        console.log('====================================');
         this.voucherDiscount =
           ((this.subtotal + this.taxAmount) * this.appliedVoucher.percentage) / 100;
       }
@@ -290,7 +287,7 @@ export class PosSummaryComponent extends BaseComponent {
 
   onCheckout() {
     this.customerPaidError = null;
-    if ((!this.customerPaid || this.customerPaid <= 0) && !this.appliedVoucher) {
+    if (this.change < 0) {
       this.customerPaidError = this.translate('POS.CUSTOMER_PAID_REQUIRED');
       return;
     }

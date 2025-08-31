@@ -111,7 +111,8 @@
     "active": "Active",
     "inactive": "Inactive",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "view": "View"
   },
   "configuration": {
     "title": "Configuration",
@@ -232,7 +233,8 @@
     "tip": "Tip",
     "searchPlaceholder": "Search Orders",
     "deleteTitle": "Delete Order",
-    "deleteMessage": "Are you sure you want to delete order: {{name}}?"
+    "deleteMessage": "Are you sure you want to delete order: {{name}}?",
+    "selectDateRange": "Select Date Range"
   },
   "ordersAnalysis": {
     "totalSubTotal": "Total Subtotal",
@@ -240,6 +242,6 @@
     "totalDue": "Total Due",
     "totalTaxAmount": "Total Tax Amount",
     "totalTip": "Total Tip",
-    "totalTotalPrice": "Total Total Price"
+    "totalPrice": "Total Price"
   }
 }

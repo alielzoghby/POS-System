@@ -51,7 +51,7 @@ export class OrdersAnalysisComponent extends BaseComponent {
         bgClass: 'bg-secondary',
       },
       {
-        title: this.translate('ordersAnalysis.totalTotalPrice'),
+        title: this.translate('ordersAnalysis.totalPrice'),
         value: this.analysis.totalTotalPrice,
         bgClass: 'bg-danger',
       },

@@ -234,7 +234,8 @@
     "searchPlaceholder": "Search Orders",
     "deleteTitle": "Delete Order",
     "deleteMessage": "Are you sure you want to delete order: {{name}}?",
-    "selectDateRange": "Select Date Range"
+    "selectDateRange": "Select Date Range",
+    "selectClient": "Select Client"
   },
   "ordersAnalysis": {
     "totalSubTotal": "Total Subtotal",

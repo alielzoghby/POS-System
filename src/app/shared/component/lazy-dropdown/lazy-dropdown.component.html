@@ -1,4 +1,4 @@
-<div class="w-full">
+<div class="w-full h-full">
   <p-select
     *ngIf="!multiply"
     [options]="dropdownOptions"
@@ -12,7 +12,8 @@
     [(ngModel)]="selectedOption"
     (onChange)="onOptionSelect($event)"
     [disabled]="disable"
-    class="w-full"
+    [showClear]="true"
+    class="w-full h-full flex items-center"
   ></p-select>
 
   <p-multiSelect
@@ -22,12 +23,13 @@
     (onPanelShow)="onDropdownOpen()"
     (onPanelHide)="onDropdownClose()"
     [filter]="true"
+    [showClear]="true"
     [placeholder]="placeholder"
     appendTo="body"
     optionLabel="label"
     [(ngModel)]="selectedOption"
     (onChange)="onOptionSelect($event)"
     [disabled]="disable"
-    styleClass="w-full"
+    class="w-full h-full flex items-center"
   ></p-multiSelect>
 </div>

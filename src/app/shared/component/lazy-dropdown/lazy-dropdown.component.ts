@@ -1,5 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component, forwardRef, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  forwardRef,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  output,
+  SimpleChanges,
+} from '@angular/core';
 import { FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
@@ -26,6 +36,7 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
   @Input() placeholder: string = '';
   @Input() multiply: boolean = false;
   @Input() disable: boolean = false;
+  @Output() onSelect = new EventEmitter<any>();
 
   dropdownOptions: any[] = [];
   selectedOption: any;
@@ -110,12 +121,14 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
 
   /** When user selects an option */
   onOptionSelect(event: any): void {
-    this.selectedOption = event.value;
+    this.selectedOption = event?.value;
 
     if (this.multiply) {
       this.onChange(this.selectedOption.map((opt: any) => opt.value));
+      this.onSelect.emit(this.selectedOption.map((opt: any) => opt.value));
     } else {
-      this.onChange(this.selectedOption.value);
+      this.onChange(this.selectedOption?.value);
+      this.onSelect.emit(this.selectedOption?.value);
     }
 
     this.onTouched();
@@ -137,8 +150,8 @@ export class LazyDropdownComponent implements OnInit, OnChanges {
           type: this.lookup,
           params: { limit: 1000, ...this.lookUpExtraParams },
         })
-        .subscribe((data) => {
-          this.dropdownOptions = data.categories || [];
+        .subscribe((res) => {
+          this.dropdownOptions = res.data || [];
 
           // Keep any pre-selected values
           if (this.selectedOption) {

@@ -23,6 +23,10 @@ import {
   ConfirmDialogData,
   ConfirmDialogSeverity,
 } from '@/shared/component/confirm-dialog/confirm-dialog.component';
+import { ReceiptTemplateComponent } from '../components/receipt-template';
+import { ViewChild } from '@angular/core';
+import { LazyDropdownComponent } from '@/shared/component/lazy-dropdown/lazy-dropdown.component';
+import { Lookup } from '@/shared/enums/lookup.enum';
 
 @Component({
   selector: 'app-order-list',
@@ -39,6 +43,8 @@ import {
     InputText,
     OrdersAnalysisComponent,
     DatePicker,
+    ReceiptTemplateComponent,
+    LazyDropdownComponent,
   ],
   template: `
     <app-state-section [state]="sectionState">
@@ -49,7 +55,7 @@ import {
         <app-orders-analysis [analysis]="analysis"></app-orders-analysis>
 
         <hr />
-        <div class="flex gap-3 mb-4">
+        <div class="flex flex-wrap gap-3 mb-4">
           <input
             type="text"
             pInputText
@@ -67,8 +73,16 @@ import {
             [readonlyInput]="true"
             class="w-100  h-[40px]"
             placeholder="{{ 'orders.selectDateRange' | translate }}"
-            (onSelect)="onDateRangeChange()"
+            (onSelect)="onFilterChange()"
           ></p-datepicker>
+
+          <app-lazy-dropdown
+            [(ngModel)]="client"
+            [lookup]="Lookup.Clients"
+            class="w-[350px] h-[40px]"
+            [placeholder]="'orders.selectClient' | translate"
+            (onSelect)="onFilterChange()"
+          ></app-lazy-dropdown>
         </div>
         <p-table
           [value]="orders"
@@ -173,17 +187,28 @@ import {
             </tr>
           </ng-template>
         </p-table>
+
+        <!-- Receipt Preview -->
+        <div style="display:none">
+          <app-receipt-template #receipt [order]="selectedOrder"></app-receipt-template>
+        </div>
       </div>
     </app-state-section>
   `,
 })
 export class OrderListComponent extends BaseComponent {
+  @ViewChild('receipt', { static: false }) receiptComponent!: ReceiptTemplateComponent;
+
   orders: Order[] = [];
   analysis: OrderAnalysis = {} as OrderAnalysis;
   orderActionsMap = new Map<number, MenuItem[]>();
   expandedOrders = new Set<number>();
   globalFilterValue: string = '';
   rangeDates: Date[] = [];
+  selectedOrder: Order = {} as Order;
+  client!: number;
+
+  protected Lookup = Lookup;
   constructor(
     private orderService: OrderService,
     private dialog: MatDialog
@@ -225,7 +250,43 @@ export class OrderListComponent extends BaseComponent {
     ];
   }
 
-  openViewDialog(order: Order) {}
+  openViewDialog(order: Order) {
+    this.selectedOrder = order;
+    setTimeout(() => {
+      const receiptHtml = this.receiptComponent.host.nativeElement.innerHTML;
+
+      const printWindow = window.open('', '_blank', 'width=400,height=600');
+      if (printWindow) {
+        // grab all stylesheets from current document
+        const styles = Array.from(document.styleSheets)
+          .map((style: any) => {
+            try {
+              return [...style.cssRules].map((rule) => rule.cssText).join('');
+            } catch (e) {
+              return '';
+            }
+          })
+          .join('');
+
+        printWindow.document.write(`
+      <html>
+        <head>
+          <title>Receipt</title>
+          <style>${styles}</style>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=VT323&display=swap" rel="stylesheet" />
+        </head>
+        <body>${receiptHtml}</body>
+      </html>
+    `);
+        printWindow.document.close();
+        printWindow.focus();
+        // Auto-print after content loads
+        printWindow.onload = () => printWindow.print();
+      }
+    }, 100);
+  }
 
   openEditDialog(order: Order) {
     // const dialogRef = this.dialog.open(EditOrderDialogComponent, {
@@ -246,7 +307,7 @@ export class OrderListComponent extends BaseComponent {
     this.getOrders(page, rows);
   }
 
-  onDateRangeChange() {
+  onFilterChange() {
     this.getOrders(1, this.pageSize);
   }
   getOrders(page: number = 1, limit: number = this.pageSize) {
@@ -254,6 +315,7 @@ export class OrderListComponent extends BaseComponent {
       page,
       limit,
       search: this.searchTerm,
+      client_id: this.client,
     };
 
     if (this.rangeDates.length === 2) {

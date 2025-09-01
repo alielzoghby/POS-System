@@ -4,7 +4,6 @@ import { ApiBaseService } from '@/shared/services/general/api-base.service';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { filterNullEntity } from '@/shared/utils/filter-null-entity.util';
-import { OrderModel } from '../../dashboard/model/order.model';
 import { Order, OrderList } from '@/pages/orders/models/order.model';
 
 @Injectable({
@@ -31,12 +30,17 @@ export class OrderService {
   getOrders(body: {
     page: number;
     limit: number;
-    search: string;
-    startDate: Date;
-    endDate: Date;
+    search?: string;
+    startDate?: Date;
+    endDate?: Date;
+    client_id?: number;
   }): Observable<OrderList> {
     return this.baseAPI
-      .get(ApiConstant.GET_ORDERS, { params: filterNullEntity(body) })
+      .get(ApiConstant.GET_ORDERS, {
+        params: {
+          ...filterNullEntity(body),
+        },
+      })
       .pipe(map((res) => this.mapper.fromJson(OrderList, res.data)));
   }
 

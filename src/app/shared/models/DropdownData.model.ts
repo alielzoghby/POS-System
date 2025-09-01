@@ -7,6 +7,6 @@ export class DropdownData {
 }
 
 export class DropdownDataModel {
-  @Expose() categories?: DropdownData[];
+  @Expose() data?: DropdownData[];
   @Expose() pagination?: Pagination;
 }

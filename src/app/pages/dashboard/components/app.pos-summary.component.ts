@@ -4,12 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { TranslateModule } from '@ngx-translate/core';
-import { HttpClient } from '@angular/common/http';
 import { BaseComponent } from '@/shared/component/base-component/base.component';
 import { VoucherService } from '@/pages/voucher/service/voucher-service';
 import { SectionStateStatus } from '@/shared/enums/section-state-status.enum';
 import { ConfigurationService } from '@/pages/configuration/service/configuration-service';
-import { n, V } from 'node_modules/@angular/cdk/overlay-module.d-C2CxnwqT';
 import { Voucher } from '@/pages/voucher/models/voucher.model';
 
 @Component({
@@ -28,8 +26,9 @@ import { Voucher } from '@/pages/voucher/models/voucher.model';
             <button
               *ngFor="let t of tipOptions"
               class="p-button w-[75px] h-[60px] text-xl rounded-xl justify-center items-center"
-              [class.p-button-success]="selectedTip === t"
-              (click)="selectTip(t)"
+              [class.p-button-success]="selectedTipValue === t"
+              (click)="!readonly && selectTip(t)"
+              [disabled]="readonly"
             >
               {{ t | currency }}
             </button>
@@ -42,16 +41,17 @@ import { Voucher } from '@/pages/voucher/models/voucher.model';
           <div class="flex gap-6 flex-wrap">
             <button
               *ngFor="let method of paymentMethods"
-              class="p-button text-2xl  w-[100px] h-[60px] rounded-lg"
-              [class.p-button-success]="paymentMethod === method.value"
-              (click)="selectPaymentMethod(method.value)"
+              class="p-button text-2xl w-[100px] h-[60px] rounded-lg"
+              [class.p-button-success]="paymentMethodValue === method.value"
+              (click)="!readonly && selectPaymentMethod(method.value)"
+              [disabled]="readonly"
             >
               {{ method.label | translate }}
             </button>
           </div>
 
           <!-- Card Reference -->
-          <div *ngIf="paymentMethod === 'CARD'" class="mt-3">
+          <div *ngIf="paymentMethodValue === 'CARD'" class="mt-3">
             <label class="block text-lg font-semibold">{{
               'POS.CARD_REFERENCE' | translate
             }}</label>
@@ -60,6 +60,7 @@ import { Voucher } from '@/pages/voucher/models/voucher.model';
               [(ngModel)]="cardReference"
               class="w-full text-lg p-4 border-2 rounded-xl"
               placeholder="REF123"
+              [disabled]="readonly"
             />
           </div>
 
@@ -72,9 +73,10 @@ import { Voucher } from '@/pages/voucher/models/voucher.model';
                 }}</label>
                 <input
                   pInputText
-                  [(ngModel)]="voucherCode"
+                  [(ngModel)]="voucherCodeValue"
                   class="w-full text-lg p-4 border-2 rounded-xl"
                   placeholder="ABC123"
+                  [disabled]="readonly"
                 />
               </div>
               <button
@@ -85,7 +87,8 @@ import { Voucher } from '@/pages/voucher/models/voucher.model';
                 class="p-button p-button-primary rounded-lg px-2"
                 [loading]="sectionState === SectionStateStatus.Loading"
                 iconPos="right"
-                (click)="verifyVoucher()"
+                (click)="!readonly && verifyVoucher()"
+                [disabled]="readonly"
               ></button>
             </div>
             <div *ngIf="appliedVoucher" class="text-green-700 font-bold text-lg mt-1">
@@ -101,11 +104,11 @@ import { Voucher } from '@/pages/voucher/models/voucher.model';
         </div>
 
         <!-- Totals Section -->
-        <div class="grid grid-cols-2 gap-2 border-t border-gray-300 pt-3  text-xl font-medium">
+        <div class="grid grid-cols-2 gap-2 border-t border-gray-300 pt-3 text-xl font-medium">
           <div>{{ 'POS.SUBTOTAL' | translate }}</div>
           <div>{{ subtotal | currency }}</div>
           <div>{{ 'POS.TIP' | translate }}</div>
-          <div>{{ selectedTip | currency }}</div>
+          <div>{{ selectedTipValue | currency }}</div>
           <div>{{ 'POS.TAX' | translate }}</div>
           <div>{{ taxRate }}% ({{ taxAmount | currency }})</div>
           <div *ngIf="appliedVoucher" class="text-green-600">
@@ -131,7 +134,8 @@ import { Voucher } from '@/pages/voucher/models/voucher.model';
               type="number"
               [(ngModel)]="customerPaid"
               class="text-xl p-4 border-2 rounded-xl"
-              (ngModelChange)="onCustomerPaidChange($event)"
+              (ngModelChange)="!readonly && onCustomerPaidChange($event)"
+              [disabled]="readonly"
             />
             <div *ngIf="customerPaidError" class="text-red-500 text-sm mt-1">
               {{ customerPaidError }}
@@ -151,7 +155,8 @@ import { Voucher } from '@/pages/voucher/models/voucher.model';
           pButton
           [label]="'POS.CHECKOUT' | translate"
           class="w-full p-button-success text-2xl h-[60px] rounded-lg"
-          (click)="onCheckout()"
+          (click)="!readonly && onCheckout()"
+          [disabled]="readonly"
         ></button>
       </div>
     </div>
@@ -159,8 +164,14 @@ import { Voucher } from '@/pages/voucher/models/voucher.model';
 })
 export class PosSummaryComponent extends BaseComponent {
   @Input() subtotal = 0;
-  @Input() taxRate = 0.14;
   @Output() checkout = new EventEmitter<any>();
+
+  @Input() readonly = false; // عند true → كل الحقول معطلة
+  @Input() externalTotal?: number;
+  @Input() externalChange?: number;
+  @Input() externalTip?: number;
+  @Input() externalPaymentMethod?: 'CASH' | 'CARD';
+  @Input() externalVoucherCode?: string;
 
   tipOptions = [0, 5, 10, 15, 20];
   selectedTip = 0;
@@ -174,14 +185,39 @@ export class PosSummaryComponent extends BaseComponent {
   customerPaid = 0;
   voucherCode = '';
   voucherDiscount = 0;
+  taxRate = 0;
   voucherInvalid = false;
   appliedVoucher!: Voucher;
-
   cardReference = '';
 
   customerPaidError: string | null = null;
-
   protected SectionStateStatus = SectionStateStatus;
+
+  get selectedTipValue() {
+    return this.readonly ? (this.externalTip ?? 0) : this.selectedTip;
+  }
+
+  get paymentMethodValue() {
+    return this.readonly ? (this.externalPaymentMethod ?? 'CASH') : this.paymentMethod;
+  }
+
+  get voucherCodeValue() {
+    return this.readonly ? (this.externalVoucherCode ?? '') : this.voucherCode;
+  }
+
+  get taxAmount() {
+    return (this.subtotal * this.taxRate) / 100;
+  }
+
+  get total() {
+    return this.readonly
+      ? (this.externalTotal ?? 0)
+      : Math.max(0, this.subtotal + this.taxAmount + this.selectedTip - this.voucherDiscount);
+  }
+
+  get change() {
+    return this.readonly ? (this.externalChange ?? 0) : this.customerPaid - this.total;
+  }
 
   constructor(
     private configurationService: ConfigurationService,
@@ -200,25 +236,12 @@ export class PosSummaryComponent extends BaseComponent {
     }
   }
 
-  get taxAmount() {
-    return (this.subtotal * this.taxRate) / 100;
-  }
-
-  get total() {
-    return Math.max(0, this.subtotal + this.taxAmount + this.selectedTip - this.voucherDiscount);
-  }
-
-  get change() {
-    return this.customerPaid - this.total;
-  }
-
   selectTip(tip: number) {
     this.selectedTip = tip;
   }
 
   selectPaymentMethod(method: 'CASH' | 'CARD') {
     this.paymentMethod = method;
-    // Reset related fields
     if (method !== 'CARD') {
       this.cardReference = '';
     }
@@ -240,6 +263,7 @@ export class PosSummaryComponent extends BaseComponent {
   }
 
   verifyVoucher() {
+    if (this.readonly) return;
     this.load(this.voucherService.getVoucher(this.voucherCode.trim())).subscribe(
       (res) => {
         if (
@@ -250,16 +274,7 @@ export class PosSummaryComponent extends BaseComponent {
           new Date(res.expired_at) > new Date()
         ) {
           this.appliedVoucher = res;
-
-          if (res.amount) {
-            this.voucherDiscount = res.amount;
-          } else if (res.percentage) {
-            this.voucherDiscount = (this.subtotal * res.percentage) / 100;
-          } else {
-            this.voucherDiscount = 0;
-            this.voucherInvalid = true;
-            return;
-          }
+          this.voucherDiscount = res.amount ?? (this.subtotal * res.percentage!) / 100;
           this.voucherInvalid = false;
           this.calculateVoucherDiscount();
           return;
@@ -276,16 +291,13 @@ export class PosSummaryComponent extends BaseComponent {
 
   calculateVoucherDiscount() {
     if (this.appliedVoucher) {
-      if (this.appliedVoucher.amount) {
-        this.voucherDiscount = this.appliedVoucher.amount;
-      } else if (this.appliedVoucher.percentage) {
-        this.voucherDiscount =
-          ((this.subtotal + this.taxAmount) * this.appliedVoucher.percentage) / 100;
-      }
+      this.voucherDiscount =
+        this.appliedVoucher.amount ?? (this.subtotal * (this.appliedVoucher.percentage ?? 0)) / 100;
     }
   }
 
   onCheckout() {
+    if (this.readonly) return;
     this.customerPaidError = null;
     if (this.change < 0) {
       this.customerPaidError = this.translate('POS.CUSTOMER_PAID_REQUIRED');

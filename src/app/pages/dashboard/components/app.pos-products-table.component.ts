@@ -6,12 +6,13 @@ import { ButtonModule } from 'primeng/button';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { TableModule } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { ProductService } from '@/pages/products/services/product.service';
 import { BaseComponent } from '@/shared/component/base-component/base.component';
 import { ProductListModel, ProductModel } from '@/pages/products/models/product.model';
 import { Popover } from 'primeng/popover';
+import { OrderService } from '@/pages/orders/services/order.service';
 
 @Component({
   selector: 'app-pos-product-table',
@@ -31,31 +32,47 @@ import { Popover } from 'primeng/popover';
     <div
       class="bg-surface-overlay rounded-xl shadow-md h-full w-full flex flex-col overflow-hidden p-4"
     >
-      <!-- Barcode Input -->
+      <!-- Order / Return Toggle -->
+      <div class="mb-4 flex gap-6 items-center">
+        <label class="flex items-center gap-2">
+          <input type="radio" name="orderType" [(ngModel)]="isReturn" [value]="false" />
+          {{ 'POS.ORDER' | translate }}
+        </label>
+        <label class="flex items-center gap-2">
+          <input type="radio" name="orderType" [(ngModel)]="isReturn" [value]="true" />
+          {{ 'POS.RETURN' | translate }}
+        </label>
+      </div>
+
+      <!-- Search Input -->
       <div class="mb-4 flex gap-4 items-center relative">
         <input
           type="text"
           pInputText
           class="text-xl p-3 border-2 h-[60px] rounded-lg w-full"
-          [(ngModel)]="barcode"
-          (input)="onSearchInput($event, pop)"
+          [(ngModel)]="searchValue"
+          (input)="performSearch(pop)"
           (keydown)="onKeyDown($event, pop)"
-          placeholder="{{ 'POS.ENTER_BARCODE' | translate }}"
+          placeholder="{{
+            isReturn
+              ? ('POS.SEARCH_ORDER_ID' | translate)
+              : ('POS.ENTER_PRODUCT_BARCODE' | translate)
+          }}"
           #barcodeInput
         />
 
         <button
           pButton
           type="button"
-          label="{{ 'POS.ADD' | translate }}"
+          label="{{ isReturn ? ('POS.SEARCH' | translate) : ('POS.ADD' | translate) }}"
           icon="pi pi-search"
           class="p-button-success w-[200px] h-[60px] px-6 rounded-lg"
           [loading]="loading"
-          (click)="onSearchInput(barcode, pop)"
+          (click)="performSearch(pop)"
         ></button>
 
-        <!-- Product Search Popover -->
-        <p-popover #pop>
+        <!-- Product Popover (only for normal order) -->
+        <p-popover #pop *ngIf="!isReturn">
           <div *ngIf="searchData?.products?.length; else noResults">
             <ul class="list-none m-0 p-0 w-[250px]">
               <li
@@ -96,10 +113,7 @@ import { Popover } from 'primeng/popover';
           </ng-template>
 
           <ng-template pTemplate="body" let-product let-i="rowIndex">
-            <tr
-              class="border-b border-gray-200"
-              [ngClass]="i % 2 === 0 ? 'bg-white' : 'bg-gray-100'"
-            >
+            <tr [ngClass]="i % 2 === 0 ? 'bg-white' : 'bg-gray-100'">
               <td class="py-4 px-3">{{ product.name }}</td>
               <td class="py-4 px-3">{{ product.price | currency: 'USD' }}</td>
               <td class="py-4 px-3">
@@ -139,39 +153,35 @@ export class PosProductTableComponent extends BaseComponent {
   @Output() productRemoved = new EventEmitter<number>();
   @Output() productUpdated = new EventEmitter<void>();
   @ViewChild('barcodeInput') barcodeInput!: ElementRef;
+  @ViewChild('pop') pop!: Popover;
 
+  searchValue = '';
   searchData!: ProductListModel;
-  barcode: string = '';
-
   loading = false;
   popVisible = false;
   searchSubject = new Subject<string>();
   selectedProduct!: ProductModel | null;
   selectedIndex = 0;
 
-  constructor(private productService: ProductService) {
+  isReturn = false;
+
+  constructor(
+    private productService: ProductService,
+    private orderService: OrderService
+  ) {
     super();
+
+    // Product search debounce
     this.searchSubject
       .pipe(
         debounceTime(300),
         distinctUntilChanged(),
-        switchMap((searchTerm) =>
-          this.productService.getProducts({
-            limit: 1000,
-            search: searchTerm,
-            page: this.pageIndex,
-          })
-        )
+        switchMap((term) => this.productService.getProducts({ limit: 1000, search: term, page: 1 }))
       )
       .subscribe((res) => {
         this.popVisible = false;
         this.searchData = res;
-
-        if (res.products?.length === 1) {
-          this.selectedProduct = res.products[0];
-        } else {
-          this.selectedProduct = null;
-        }
+        this.selectedProduct = res.products?.length === 1 ? res.products[0] : null;
       });
   }
 
@@ -179,63 +189,72 @@ export class PosProductTableComponent extends BaseComponent {
     this.barcodeInput.nativeElement.focus();
   }
 
-  removeProduct(index: number) {
-    this.productRemoved.emit(index);
-  }
+  performSearch(pop: any) {
+    if (!this.searchValue) return;
 
-  updateTotal(index: number) {
-    this.productUpdated.emit();
-  }
-
-  onSearchInput(event: any, pop: Popover) {
-    const value = event.target.value.trim();
-    if (value) {
-      this.searchSubject.next(value);
+    if (this.isReturn) {
+      // Search order for return
+      this.loading = true;
+      this.load(
+        this.orderService.getOrders({ page: 1, limit: 30, search: this.searchValue })
+      ).subscribe(
+        (res: any) => {
+          const order = res.orders?.[0];
+          if (order) {
+            this.products = order.productOrders.map((po: any) => ({
+              product_id: po.product.product_id,
+              name: po.product.name,
+              price: po.price,
+              quantity: po.quantity,
+            }));
+          }
+          this.productUpdated.emit();
+          this.loading = false;
+        },
+        () => {
+          this.products = [];
+          this.loading = false;
+        }
+      );
+    } else {
+      // Search product by barcode
+      this.searchSubject.next(this.searchValue);
       this.selectedIndex = 0;
-      if (!this.popVisible) {
-        pop.show(event);
+      if (pop && !this.popVisible) {
+        pop.show(true);
         this.popVisible = true;
       }
-    } else {
-      pop.hide();
-      this.popVisible = false;
     }
   }
-  selectProduct(product: ProductModel, pop: Popover) {
-    const existingProduct = this.products.find((p) => p.product_id === product.product_id);
 
-    if (existingProduct) {
-      existingProduct.quantity = (existingProduct.quantity || 0) + 1;
-    } else {
+  selectProduct(product: ProductModel, pop: Popover) {
+    const existing = this.products.find((p) => p.product_id === product.product_id);
+    if (existing) existing.quantity = (existing.quantity || 0) + 1;
+    else
       this.products.push({
         product_id: product.product_id,
         name: product.name,
         price: product.final_price,
         quantity: 1,
       });
-    }
 
     this.productUpdated.emit();
-    pop.hide();
-    this.popVisible = false;
-    this.barcode = '';
-
-    const soundSuccess = new Audio('assets/audio/success.mp3');
-    soundSuccess.play();
+    if (pop) {
+      pop.hide();
+      this.popVisible = false;
+    }
+    this.searchValue = '';
   }
 
-  onEnter(pop: Popover) {
-    if (this.selectedProduct) {
-      this.selectProduct(this.selectedProduct, pop);
-    } else {
-      this.onSearchInput({ target: { value: this.barcode } }, pop);
-      const soundError = new Audio('src/assets/audio/fail.mp3');
-      soundError.play();
-    }
+  removeProduct(index: number) {
+    this.productRemoved.emit(index);
+  }
+  updateTotal(index: number) {
+    this.productUpdated.emit();
   }
 
   onKeyDown(event: KeyboardEvent, pop: Popover) {
-    if (!this.searchData?.products?.length) return;
+    if (!this.searchData?.products?.length || this.isReturn) return;
 
     if (event.key === 'ArrowDown') {
       event.preventDefault();
@@ -253,7 +272,8 @@ export class PosProductTableComponent extends BaseComponent {
 
   reset() {
     this.products = [];
-    this.barcode = '';
+    this.searchValue = '';
+    this.isReturn = false;
     this.barcodeInput.nativeElement.focus();
   }
 }

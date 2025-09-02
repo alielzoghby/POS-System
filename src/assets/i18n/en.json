@@ -63,6 +63,7 @@
     "ACTIONS": "Actions",
     "ADD": "Add",
     "ENTER_BARCODE": "Enter Barcode",
+    "ENTER_PRODUCT_BARCODE": "Enter Product Barcode",
     "CUSTOMER_PAID_REQUIRED": "Customer paid is required"
   },
   "profile": {

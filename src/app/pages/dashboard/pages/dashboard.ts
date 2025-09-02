@@ -25,11 +25,7 @@ import { OrderCreatedDialogComponent } from '../components/receipt-dialog';
 
       <!-- Summary Section -->
       <div class="col-span-12 xl:col-span-4 h-full lg:overflow-hidden">
-        <app-pos-summary
-          [subtotal]="subtotal"
-          [taxRate]="0.14"
-          (checkout)="handleCheckout($event)"
-        />
+        <app-pos-summary [subtotal]="subtotal" (checkout)="handleCheckout($event)" />
       </div>
     </div>
   `,

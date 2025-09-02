@@ -59,6 +59,12 @@ export class ProductModel {
 
   @Expose()
   price?: number;
+
+  @Expose()
+  created_at?: Date;
+
+  @Expose()
+  updated_at?: number;
 }
 
 export class ProductListModel {

@@ -25,6 +25,7 @@ import {
   ConfirmDialogData,
   ConfirmDialogSeverity,
 } from '@/shared/component/confirm-dialog/confirm-dialog.component';
+import { UnitValueDialogComponent } from '../component/unit-value-dialog.component';
 
 @Component({
   selector: 'app-product-list',
@@ -113,6 +114,7 @@ import {
               <th>{{ 'product.final_price' | translate }}</th>
               <th>{{ 'product.category' | translate }}</th>
               <th>{{ 'product.quantity' | translate }}</th>
+              <th>{{ 'product.unit' | translate }}</th>
               <th>{{ 'product.status' | translate }}</th>
               <th>{{ 'product.expiration' | translate }}</th>
               <th>{{ 'common.actions' | translate }}</th>
@@ -140,6 +142,16 @@ import {
               <td>{{ product.category?.name }}</td>
               <td>{{ product.quantity }}</td>
               <td>
+                <div class="flex items-center gap-2">
+                  <span>{{ product.unit_value || 0 }} </span>
+                  <span>{{ 'product.of' | translate }}</span>
+                  <span
+                    >{{ product.original_unit_value || 0 }}
+                    {{ 'product.' + product.unit | translate }}</span
+                  >
+                </div>
+              </td>
+              <td>
                 <p-tag
                   [value]="'product.' + product.status | translate"
                   [severity]="getStatusSeverity(product.status)"
@@ -148,22 +160,38 @@ import {
               </td>
               <td>{{ product.expiration_date | date: 'dd/MM/yyyy' }}</td>
               <td>
-                <p-button
-                  icon="pi pi-pencil"
-                  class="mr-2"
-                  [rounded]="true"
-                  [outlined]="true"
-                  (click)="editProduct(product)"
-                  [pTooltip]="'common.edit' | translate"
-                />
-                <p-button
-                  icon="pi pi-trash"
-                  severity="danger"
-                  [rounded]="true"
-                  [outlined]="true"
-                  (click)="deleteProduct(product)"
-                  [pTooltip]="'common.delete' | translate"
-                />
+                <div class="flex flex-wrap gap-2">
+                  <p-button
+                    icon="pi pi-pencil"
+                    [rounded]="true"
+                    [outlined]="true"
+                    (click)="editProduct(product)"
+                    [pTooltip]="'common.edit' | translate"
+                  />
+                  <p-button
+                    icon="pi pi-trash"
+                    severity="danger"
+                    [rounded]="true"
+                    [outlined]="true"
+                    (click)="deleteProduct(product)"
+                    [pTooltip]="'common.delete' | translate"
+                  />
+                  <p-button
+                    *ngIf="
+                      !product.subProduct &&
+                      product.unit_value > 1 &&
+                      product.quantity > 0 &&
+                      product.unit_price &&
+                      product.unit
+                    "
+                    icon="pi pi-plus"
+                    severity="info"
+                    [rounded]="true"
+                    [outlined]="true"
+                    (click)="createSubProduct(product)"
+                    [pTooltip]="'product.create_subProduct' | translate"
+                  />
+                </div>
               </td>
             </tr>
           </ng-template>
@@ -200,13 +228,6 @@ export class ProductListComponent extends BaseComponent {
       });
   }
 
-  /*************  ✨ Windsurf Command ⭐  *************/
-  /**
-   * Gets the severity of a product status
-   * @param status The product status
-   * @returns The severity of the product status
-   */
-  /*******  5ad40d6c-5b48-492d-b1cb-7f186bee1f39  *******/
   getStatusSeverity(status: ProductStatus): string {
     switch (status) {
       case ProductStatus.InStock:
@@ -251,7 +272,7 @@ export class ProductListComponent extends BaseComponent {
       if (result) {
         this.load(this.productService.addProduct(result)).subscribe(
           (newProduct) => {
-            this.products.push(newProduct);
+            this.getProducts();
           },
           (error) => {
             this.openNew(result);
@@ -322,6 +343,21 @@ export class ProductListComponent extends BaseComponent {
     dialogRef.afterClosed().subscribe((confirm) => {
       if (confirm) {
         this.load(this.productService.deleteProduct(productIds)).subscribe(() => {
+          this.getProducts();
+        });
+      }
+    });
+  }
+
+  createSubProduct(product: ProductModel) {
+    const dialogRef = this.dialog.open(UnitValueDialogComponent, {
+      data: product,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        const body = { unit_value: result.unit_value || 0, reference: product.reference || '' };
+        this.load(this.productService.createSubProduct(body)).subscribe((updatedProduct) => {
           this.getProducts();
         });
       }

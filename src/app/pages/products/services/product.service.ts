@@ -45,4 +45,10 @@ export class ProductService {
       .delete(ApiConstant.DELETE_PRODUCT, { body: { ids } })
       .pipe(map((res) => this.mapper.fromJson(ProductModel, res.data)));
   }
+
+  createSubProduct(body: { unit_value: number; reference: string }): Observable<ProductModel> {
+    return this.baseAPI
+      .post(ApiConstant.CREATE_SUB_PRODUCT, filterNullEntity(body))
+      .pipe(map((res) => this.mapper.fromJson(ProductModel, res.data)));
+  }
 }

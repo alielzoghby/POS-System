@@ -165,12 +165,15 @@ import { AccordionModule } from 'primeng/accordion';
           </div>
 
           <div class="field col-span-2 md:col-span-1">
-            <label for="status">{{ 'product.status' | translate }}</label>
-            <app-lazy-dropdown
-              id="status"
-              formControlName="status"
-              [lookup]="statusOptions"
-            ></app-lazy-dropdown>
+            <label>{{ 'product.status' | translate }}</label>
+            <div>
+              <app-lazy-dropdown
+                id="status"
+                class="h-a"
+                formControlName="status"
+                [lookup]="statusOptions"
+              ></app-lazy-dropdown>
+            </div>
             <app-validation-errors
               [control]="form.get('status')"
               [formGroup]="form"
@@ -180,11 +183,13 @@ import { AccordionModule } from 'primeng/accordion';
           <!-- Category -->
           <div class="field col-span-2">
             <label for="category">{{ 'product.category' | translate }}</label>
-            <app-lazy-dropdown
-              id="category"
-              formControlName="category_id"
-              [lookup]="lookup.Categories"
-            ></app-lazy-dropdown>
+            <div>
+              <app-lazy-dropdown
+                id="category"
+                formControlName="category_id"
+                [lookup]="lookup.Categories"
+              ></app-lazy-dropdown>
+            </div>
             <app-validation-errors
               [control]="form.get('category_id')"
               [formGroup]="form"
@@ -221,15 +226,17 @@ import { AccordionModule } from 'primeng/accordion';
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="field col-span-3 md:col-span-1">
                   <label for="unit">{{ 'product.unit' | translate }}</label>
-                  <app-lazy-dropdown
-                    id="unit"
-                    formControlName="unit"
-                    [lookup]="unitOptions"
-                    optionLabel="label"
-                    optionValue="value"
-                    placeholder="{{ 'product.selectUnit' | translate }}"
-                    class="w-100"
-                  ></app-lazy-dropdown>
+                  <div>
+                    <app-lazy-dropdown
+                      id="unit"
+                      formControlName="unit"
+                      [lookup]="unitOptions"
+                      optionLabel="label"
+                      optionValue="value"
+                      placeholder="{{ 'product.selectUnit' | translate }}"
+                      class="w-100"
+                    ></app-lazy-dropdown>
+                  </div>
                 </div>
 
                 <div class="field col-span-3 md:col-span-1">

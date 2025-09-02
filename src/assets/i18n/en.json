@@ -166,7 +166,11 @@
     "BOTTLE": "Bottle",
     "selectUnit": "Select Unit",
     "deleteTitle": "Delete Product",
-    "deleteMessage": "Are you sure you want to delete the product(s): {{name}}?"
+    "deleteMessage": "Are you sure you want to delete the product(s): {{name}}?",
+    "of": "of",
+    "setUnitValue": "Set Unit Value",
+    "ProductUnitValue": "Product Unit Value",
+    "create_subProduct": "Create Sub Product"
   },
   "voucher": {
     "title": "Vouchers",

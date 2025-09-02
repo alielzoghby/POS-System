@@ -160,7 +160,7 @@
     "showUnitConfigurationSection": "Show Unit Configuration Section",
     "unitSection": "Unit Section",
     "PIECE": "Piece",
-    "KILOGRAM": "Kilogram",
+    "KILOGRAM": "Kg",
     "PACK": "Pack",
     "BOX": "Box",
     "BOTTLE": "Bottle",
@@ -210,7 +210,13 @@
     "product": "Product",
     "quantity": "Quantity",
     "price": "Price",
-    "voucher": "Voucher"
+    "voucher": "Voucher",
+    "Weight": "Weight",
+    "Price_per_unit": "Price per unit",
+    "expirationDate": "Expiration Date",
+    "LOT": "LOT",
+    "dateAndTime": "Date and Time",
+    "finalPrice": "Final Price"
   },
   "orders": {
     "createdSuccess": "Order Created Successfully",

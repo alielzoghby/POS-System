@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToolbarModule } from 'primeng/toolbar';
 import { ButtonModule } from 'primeng/button';
@@ -9,7 +9,6 @@ import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SectionStateStatus } from '@/shared/enums/section-state-status.enum';
 import { StateSectionComponent } from '@/shared/component/state-section/state-section.component';
 import { BaseComponent } from '@/shared/component/base-component/base.component';
 import { ProductModel, ProductStatus } from '../models/product.model';
@@ -18,14 +17,14 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Tooltip } from 'primeng/tooltip';
 import { MatDialog } from '@angular/material/dialog';
 import { ProductDialogComponent } from '../component/product-dialog.component';
-import { D } from 'node_modules/@angular/cdk/bidi-module.d-IN1Vp56w';
-import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import {
   ConfirmDialogComponent,
   ConfirmDialogData,
   ConfirmDialogSeverity,
 } from '@/shared/component/confirm-dialog/confirm-dialog.component';
 import { UnitValueDialogComponent } from '../component/unit-value-dialog.component';
+import { ProductPriceTagTemplateComponent } from '../component/product-price-tag-template';
 
 @Component({
   selector: 'app-product-list',
@@ -43,6 +42,7 @@ import { UnitValueDialogComponent } from '../component/unit-value-dialog.compone
     StateSectionComponent,
     TranslateModule,
     Tooltip,
+    ProductPriceTagTemplateComponent,
   ],
   providers: [CurrencyPipe, DatePipe],
   template: `
@@ -162,6 +162,13 @@ import { UnitValueDialogComponent } from '../component/unit-value-dialog.compone
               <td>
                 <div class="flex flex-wrap gap-2">
                   <p-button
+                    icon="pi pi-eye"
+                    [rounded]="true"
+                    [outlined]="true"
+                    (click)="viewProductLabel(product)"
+                    [pTooltip]="'common.view' | translate"
+                  />
+                  <p-button
                     icon="pi pi-pencil"
                     [rounded]="true"
                     [outlined]="true"
@@ -196,14 +203,25 @@ import { UnitValueDialogComponent } from '../component/unit-value-dialog.compone
             </tr>
           </ng-template>
         </p-table>
+
+        <!-- Receipt Preview -->
+        <div style="display:none">
+          <app-product-price-tag-template
+            #receipt
+            [product]="selectedProduct"
+          ></app-product-price-tag-template>
+        </div>
       </div>
     </app-state-section>
   `,
 })
 export class ProductListComponent extends BaseComponent {
+  @ViewChild('receipt', { static: false }) productPriceTag!: ProductPriceTagTemplateComponent;
+
   products!: ProductModel[];
   selectedProducts: ProductModel[] = [];
   globalFilterValue: string = '';
+  selectedProduct: ProductModel = new ProductModel();
 
   constructor(
     private productService: ProductService,
@@ -358,9 +376,48 @@ export class ProductListComponent extends BaseComponent {
       if (result) {
         const body = { unit_value: result.unit_value || 0, reference: product.reference || '' };
         this.load(this.productService.createSubProduct(body)).subscribe((updatedProduct) => {
+          this.viewProductLabel(updatedProduct);
           this.getProducts();
         });
       }
     });
+  }
+
+  viewProductLabel(product: ProductModel) {
+    this.selectedProduct = product;
+    setTimeout(() => {
+      const receiptHtml = this.productPriceTag.host.nativeElement.innerHTML;
+
+      const printWindow = window.open('', '_blank', 'width=400,height=600');
+      if (printWindow) {
+        // grab all stylesheets from current document
+        const styles = Array.from(document.styleSheets)
+          .map((style: any) => {
+            try {
+              return [...style.cssRules].map((rule) => rule.cssText).join('');
+            } catch (e) {
+              return '';
+            }
+          })
+          .join('');
+
+        printWindow.document.write(`
+      <html>
+        <head>
+          <title>Receipt</title>
+          <style>${styles}</style>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=VT323&display=swap" rel="stylesheet" />
+        </head>
+        <body>${receiptHtml}</body>
+      </html>
+    `);
+        printWindow.document.close();
+        printWindow.focus();
+        // Auto-print after content loads
+        printWindow.onload = () => printWindow.print();
+      }
+    }, 100);
   }
 }

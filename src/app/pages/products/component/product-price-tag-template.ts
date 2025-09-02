@@ -7,92 +7,107 @@ import JsBarcode from 'jsbarcode';
 import { ProductModel } from '../models/product.model';
 
 @Component({
-  selector: 'app-receipt-template',
+  selector: 'app-product-price-tag-template',
   standalone: true,
   imports: [CommonModule, TranslateModule],
   template: `
     <div
-      class="receipt-template mx-auto my-4 p-4 max-w-sm bg-white shadow-lg font-mono text-gray-800"
+      class="receipt-template w-[95mm] h-[45mm] mx-auto p-1 max-w-sm bg-white shadow-lg font-mono text-gray-800"
       #receiptRoot
     >
-      <!-- Logo -->
-      <div class="text-center mb-4">
-        <h1 class="text-2xl font-bold">{{ ConfigConstant.APPLICATION_NAME }}</h1>
-      </div>
+      <table class="w-full h-full border-collapse p-1">
+        <tr class="align-top">
+          <!-- First Column: Product Name vertical -->
+          <td class="w-12 relative px-2 border-r border-gray-300" rowspan="4">
+            <div
+              class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -rotate-90 origin-center"
+            >
+              <p class="text-xl font-bold text-nowrap">{{ product.name }}</p>
+            </div>
+          </td>
 
-      <!-- Address -->
-      <div class="text-center">
-        <p class="text-xl font-bold">{{ product.name }}</p>
-      </div>
+          <!-- Middle Column: Product Details -->
+          <td class="px-2 border-r border-gray-300">
+            <div class="flex items-center h-full">
+              <div class="flex flex-col justify-between uppercase ">
+                <span class="font-bold">{{ 'receipt.Weight' | translate }}</span>
+                <span>{{ product.unit_value }} {{ 'product.' + product.unit | translate }}</span>
+              </div>
+            </div>
+          </td>
 
-      <hr class="my-2 border-gray-300" />
+          <td>
+            <div class="flex items-center h-full">
+              <div class="px-2 flex flex-col justify-between uppercase">
+                <span class="font-bold text-nowrap">{{
+                  'receipt.Price_per_unit' | translate
+                }}</span>
+                <span>
+                  {{ product.unit_price | currency }}/{{ 'product.' + product.unit | translate }}
+                </span>
+              </div>
+            </div>
+          </td>
 
-      <!-- Payment Details -->
-      <div class="space-y-1 text-sm mb-3 px-[60px]">
-        <div class="flex justify-between uppercase">
-          <span>{{ 'receipt.Subtotal' | translate }}</span>
-          <span>{{ order.sub_total | currency }}</span>
-        </div>
-        <div class="flex justify-between uppercase">
-          <span>{{ 'receipt.tax' | translate: { tax: order.tax } }}</span>
-          <span>{{ ((order.sub_total || 0) * (order.tax || 0)) / 100 | currency }}</span>
-        </div>
+          <!-- Last Column: Price & Barcode vertical -->
+          <td class="w-23 relative px-2 border-l border-gray-300" rowspan="4">
+            <div
+              class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -rotate-90"
+            >
+              <!-- Logo -->
+              <div class="text-center">
+                <span class="text-lg font-bold">{{ ConfigConstant.APPLICATION_NAME }}</span>
+              </div>
 
-        <div *ngIf="order.voucher" class="flex justify-between font-bold uppercase">
-          <span>{{ 'receipt.voucher' | translate }}</span>
+              <div class="flex justify-center">
+                <svg id="barcode" class="h-15"></svg>
+              </div>
+            </div>
+          </td>
+        </tr>
 
-          <span *ngIf="order.voucher.amount">-{{ order.voucher.amount | currency }}</span>
-          <span *ngIf="order.voucher.percentage"
-            >-{{ order.voucher.percentage }}%
-            <span>({{ order.discounted || 0 | currency }})</span>
-          </span>
-        </div>
+        <tr>
+          <td class="px-2 border-r border-gray-300">
+            <div class="flex items-center h-full">
+              <div class="flex flex-col justify-between uppercase">
+                <span class="font-bold text-nowrap">{{
+                  'receipt.expirationDate' | translate
+                }}</span>
+                <span class="text-sm">{{ product.expiration_date | date: 'longDate' }}</span>
+              </div>
+            </div>
+          </td>
 
-        <div class="flex justify-between font-bold uppercase">
-          <span>{{ 'receipt.total' | translate }}</span>
-          <span>{{ order.total_price | currency }}</span>
-        </div>
-        <div class="flex justify-between uppercase">
-          <span>{{ order.payment_method }}</span>
-          <span>{{ order.paid | currency }}</span>
-        </div>
+          <td>
+            <div class="flex items-center h-full">
+              <div class="px-2 flex flex-col justify-between uppercase">
+                <span class="font-bold">{{ 'receipt.LOT' | translate }}</span>
+                <span class="text-sm">{{ product.lot }}</span>
+              </div>
+            </div>
+          </td>
+        </tr>
 
-        <div class="flex justify-between uppercase">
-          <span>{{ 'receipt.change' | translate }}</span>
-          <span>{{ (order.paid || 0) - (order.total_price || 0) | currency }}</span>
-        </div>
-      </div>
+        <tr>
+          <td class="px-2 border-t border-b border-gray-300" colspan="2">
+            <div class="flex items-center h-full">
+              <div class="flex flex-col justify-between uppercase">
+                <span class="font-bold">{{ 'receipt.dateAndTime' | translate }}</span>
+                <span>{{ product.created_at | date: 'medium' }}</span>
+              </div>
+            </div>
+          </td>
+        </tr>
 
-      <hr class="my-3 border-gray-300" />
-
-      <!-- Barcode -->
-      <div class="text-center my-2 flex justify-center">
-        <svg id="barcode"></svg>
-      </div>
-
-      <!-- Return Policy -->
-      <div class="text-center text-sm mb-3">
-        <p>
-          {{ 'receipt.returnPolicy' | translate: { storeName: ConfigConstant.APPLICATION_NAME } }}
-        </p>
-        <p>{{ 'receipt.refundMessage' | translate }}</p>
-        <div class="flex justify-between mt-1 mx-[50px]">
-          <span>{{ order.created_at | date: 'fullDate' }}</span>
-          <span>{{ order.created_at | date: 'shortTime' }}</span>
-        </div>
-      </div>
-
-      <hr class="my-3 border-gray-300" />
-
-      <!-- Feedback -->
-      <div class="text-center text-sm">
-        <p>**********************************</p>
-        <p class="my-2">
-          {{ 'receipt.feedbackMessage' | translate }}
-        </p>
-        <p>{{ ConfigConstant.APPLICATION_NAME }}</p>
-        <p class="mt-2">**********************************</p>
-      </div>
+        <tr>
+          <td colspan="2">
+            <div class="flex justify-between items-center px-4 text-xl font-bold">
+              <span>{{ 'receipt.finalPrice' | translate }}</span>
+              <span class="text-2xl">{{ product.final_price | currency }}</span>
+            </div>
+          </td>
+        </tr>
+      </table>
     </div>
   `,
   styles: [
@@ -106,7 +121,7 @@ import { ProductModel } from '../models/product.model';
     `,
   ],
 })
-export class ReceiptTemplateComponent {
+export class ProductPriceTagTemplateComponent {
   @Input() product: ProductModel = new ProductModel();
 
   protected ConfigConstant = ConfigConstant;
@@ -114,6 +129,18 @@ export class ReceiptTemplateComponent {
   constructor(public host: ElementRef) {}
 
   ngAfterViewInit() {
+    if (this.product.reference) {
+      JsBarcode('#barcode', this.product.reference, {
+        format: 'CODE128',
+        lineColor: '#000',
+        width: 1,
+        height: 15,
+        displayValue: true,
+      });
+    }
+  }
+
+  ngOnChanges() {
     if (this.product.reference) {
       JsBarcode('#barcode', this.product.reference, {
         format: 'CODE128',

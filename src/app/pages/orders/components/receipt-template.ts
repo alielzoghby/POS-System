@@ -151,12 +151,22 @@ export class ReceiptTemplateComponent {
 
   constructor(public host: ElementRef) {}
 
-  ngOnInit() {
-    console.log(this.order);
-  }
-
   ngAfterViewInit() {
     if (this.order.reference) {
+      JsBarcode('#barcode', this.order.reference, {
+        format: 'CODE128',
+        lineColor: '#000',
+        width: 1.5,
+        height: 30,
+        displayValue: true,
+      });
+    }
+  }
+
+  ngOnChanges() {
+    if (this.order.reference) {
+      console.log(this.order.reference);
+
       JsBarcode('#barcode', this.order.reference, {
         format: 'CODE128',
         lineColor: '#000',

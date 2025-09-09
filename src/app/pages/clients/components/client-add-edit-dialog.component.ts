@@ -18,15 +18,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { ValidationErrorsComponent } from '@/shared/component/validation-errors/validation-errors.component';
 import { Client } from '../models/client.model';
 import { Country, State, City } from 'country-state-city';
-import {
-  NgxIntlTelInputModule,
-  CountryISO,
-  SearchCountryField,
-  PhoneNumberFormat,
-} from 'ngx-intl-tel-input';
+import { NgxIntlTelInputModule, CountryISO, SearchCountryField } from 'ngx-intl-tel-input';
 import { SelectModule } from 'primeng/select';
 import { MapToDropdownPipe } from '@/shared/pipes/map-to-dropdown-pipe';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { PhoneType } from '../enum/Phone-type.enum';
 import { BaseComponent } from '@/shared/component/base-component/base.component';
 import { LazyDropdownComponent } from '@/shared/component/lazy-dropdown/lazy-dropdown.component';

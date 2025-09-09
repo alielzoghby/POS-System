@@ -82,7 +82,8 @@
     "SETTLED": "Settled",
     "NO_DIFFERENCE": "No Difference",
     "TOTAL_DUE": "Total Due",
-    "ORDER_EXPIRED": "This order has expired and cannot be returned."
+    "ORDER_EXPIRED": "This order has expired and cannot be returned.",
+    "SELECT_CLIENT": "Select Client"
   },
   "profile": {
     "editProfile": "Edit Profile",
@@ -273,5 +274,39 @@
     "totalTaxAmount": "Total Tax Amount",
     "totalTip": "Total Tip",
     "totalPrice": "Total Price"
+  },
+  "client": {
+    "title": "Clients",
+    "create": "Create Client",
+    "name": "Full Name",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "title_short": "Title",
+    "email": "Email",
+    "company": "Company",
+    "sales": "Sales",
+    "active": "Active",
+    "inactive": "Inactive",
+    "address": "Address",
+    "addresses": "Addresses",
+    "primary_address": "Primary Address",
+    "phone": "Phone",
+    "phones": "Phone Numbers",
+    "primary_phone": "Primary Phone",
+    "orders": "Orders",
+    "created_at": "Created At",
+    "updated_at": "Updated At",
+    "no_clients": "No clients found",
+    "primaryAddress": "Primary Address",
+    "phoneNumbers": "Phone Numbers",
+    "primaryPhone": "Primary Phone",
+    "deleteTitle": "Delete Client",
+    "deleteMessage": "Are you sure you want to delete client '{{name}}'?",
+    "phoneTypes": {
+      "MOBILE": "Mobile",
+      "HOME": "Home",
+      "WORK": "Work",
+      "FAX": "Fax"
+    }
   }
 }

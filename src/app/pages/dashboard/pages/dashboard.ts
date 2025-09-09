@@ -77,6 +77,7 @@ export class Dashboard extends BaseComponent {
     method: string;
     voucher: string;
     cardReference: string;
+    client: number;
   }) {
     const productsWithoutName = this.products.map(({ name, ...rest }) => rest);
 
@@ -86,6 +87,7 @@ export class Dashboard extends BaseComponent {
       tip: event.tip,
       products: productsWithoutName,
       paid: event.paid,
+      client_id: event.client,
     };
 
     this.orderService.createOrder(order).subscribe((response) => {

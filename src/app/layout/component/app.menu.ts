@@ -65,7 +65,13 @@ export class AppMenu extends BaseComponent {
         icon: 'pi pi-fw pi-shopping-cart',
         routerLink: [RoutesUtil.Order.url()],
         visible: this.userRoleService.isUserHasRoles(RolesConstants.EDIT_SHOW_ORDERS),
-      }
+      },
+      {
+        label: this.translate('Clients'),
+        icon: 'pi pi-fw pi-user',
+        routerLink: [RoutesUtil.Client.url()],
+        visible: this.userRoleService.isUserHasRoles(RolesConstants.EDIT_SHOW_CLIENTS),
+      },
     ];
   }
 }

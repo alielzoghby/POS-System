@@ -45,14 +45,15 @@ import { ProductModel } from '@/pages/products/models/product.model';
           <td class="py-4 px-3">
             <p-inputNumber
               [(ngModel)]="product.quantity"
-              [inputStyleClass]="'w-[50px] text-center'"
+              class="w-[150px]"
+              [inputStyleClass]="'text-center'"
               [min]="1"
               inputStyleClass="text-xl px-3 py-2 rounded-lg"
               (onInput)="updateTotal.emit(i)"
               [showButtons]="true"
               buttonLayout="horizontal"
-              incrementButtonClass="p-button-sm p-button-rounded"
-              decrementButtonClass="p-button-sm p-button-rounded"
+              incrementButtonClass="p-button-sm "
+              decrementButtonClass="p-button-sm "
             ></p-inputNumber>
           </td>
           <td class="py-4 px-3 font-semibold w-[200px]">

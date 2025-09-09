@@ -11,6 +11,7 @@ import { Landing } from '@/pages/landing/pages/landing';
 import { ConfigurationComponent } from '@/pages/configuration/pages/configuration.component';
 import { VoucherListComponent } from '@/pages/voucher/pages/voucher-list.component';
 import { OrderListComponent } from '@/pages/orders/pages/order-list.component';
+import { ClientListComponent } from '@/pages/clients/pages/client-list.component';
 
 export const appRoutes: Routes = [
   {
@@ -46,6 +47,10 @@ export const appRoutes: Routes = [
       {
         path: RoutesUtil.Order.path,
         component: OrderListComponent,
+      },
+      {
+        path: RoutesUtil.Client.path,
+        component: ClientListComponent,
       },
     ],
   },

@@ -4,7 +4,6 @@ import { ApiBaseService } from '@/shared/services/general/api-base.service';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { CategoryListModel, CategoryModel } from '../model/category.model';
-import { P } from 'node_modules/@angular/cdk/portal-directives.d-DbeNrI5D';
 
 @Injectable({
   providedIn: 'root',

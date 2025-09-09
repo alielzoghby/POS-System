@@ -9,13 +9,21 @@ import { BaseComponent } from '@/shared/component/base-component/base.component'
 import { VoucherService } from '@/pages/voucher/service/voucher-service';
 import { SectionStateStatus } from '@/shared/enums/section-state-status.enum';
 import { ConfigurationService } from '@/pages/configuration/service/configuration-service';
-import { n, V } from 'node_modules/@angular/cdk/overlay-module.d-C2CxnwqT';
 import { Voucher } from '@/pages/voucher/models/voucher.model';
+import { Lookup } from '@/shared/enums/lookup.enum';
+import { LazyDropdownComponent } from '@/shared/component/lazy-dropdown/lazy-dropdown.component';
 
 @Component({
   selector: 'app-pos-summary',
   standalone: true,
-  imports: [CommonModule, FormsModule, ButtonModule, InputTextModule, TranslateModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ButtonModule,
+    InputTextModule,
+    TranslateModule,
+    LazyDropdownComponent,
+  ],
   template: `
     <div
       class=" bg-surface-overlay rounded-xl shadow-md h-full w-full p-4 text-lg justify-between flex flex-col gap-4 overflow-auto"
@@ -146,13 +154,33 @@ import { Voucher } from '@/pages/voucher/models/voucher.model';
       </div>
 
       <!-- Checkout Button -->
-      <div class="bottom-0 pt-6 border-t border-gray-300 justify-end">
-        <button
-          pButton
-          [label]="'POS.CHECKOUT' | translate"
-          class="w-full p-button-success text-2xl h-[60px] rounded-lg"
-          (click)="onCheckout()"
-        ></button>
+      <div class=" bottom-0 pt-6 justify-end">
+        <div>
+          <app-lazy-dropdown
+            *ngIf="showDropdown"
+            [(ngModel)]="client"
+            [lookup]="Lookup.Clients"
+            placeholder="{{ 'POS.SELECT_CLIENT' | translate }}"
+            class="h-[40px]"
+          ></app-lazy-dropdown>
+        </div>
+        <div class="flex gap-3 pt-3 mt-3 border-t border-gray-300 ">
+          <button
+            pButton
+            [label]="'POS.CHECKOUT' | translate"
+            class="w-full p-button-success text-2xl h-[60px] rounded-lg"
+            (click)="onCheckout()"
+          ></button>
+
+          <button
+            pButton
+            type="button"
+            class="h-[60px] w-[60px]  p-button-primary rounded-lg"
+            (click)="showDropdown = !showDropdown"
+          >
+            <i class="pi pi-book"></i>
+          </button>
+        </div>
       </div>
     </div>
   `,
@@ -178,10 +206,13 @@ export class PosSummaryComponent extends BaseComponent {
   appliedVoucher!: Voucher;
 
   cardReference = '';
+  client!: number;
+  showDropdown = false;
 
   customerPaidError: string | null = null;
 
   protected SectionStateStatus = SectionStateStatus;
+  protected Lookup = Lookup;
 
   constructor(
     private configurationService: ConfigurationService,
@@ -287,7 +318,7 @@ export class PosSummaryComponent extends BaseComponent {
 
   onCheckout() {
     this.customerPaidError = null;
-    if (this.change < 0) {
+    if (this.change < 0 && !this.client) {
       this.customerPaidError = this.translate('POS.CUSTOMER_PAID_REQUIRED');
       return;
     }
@@ -300,6 +331,7 @@ export class PosSummaryComponent extends BaseComponent {
       method: this.paymentMethod,
       voucher: this.voucherCode,
       cardReference: this.cardReference,
+      client: this.client,
     });
   }
 
@@ -311,5 +343,9 @@ export class PosSummaryComponent extends BaseComponent {
     this.paymentMethod = 'CASH';
     this.voucherDiscount = 0;
     this.appliedVoucher = null!;
+    this.voucherInvalid = false;
+    this.client = null!;
+    this.showDropdown = false;
+    this.customerPaidError = null;
   }
 }

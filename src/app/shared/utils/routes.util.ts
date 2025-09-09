@@ -41,4 +41,7 @@ export class RoutesUtil {
   static Order = new RouteConfig('order');
   static OrderList = new RouteConfig('list', RoutesUtil.Order);
 
+  // static Client = new RouteConfig('client');
+  static Client = new RouteConfig('client');
+  static ClientList = new RouteConfig('list', RoutesUtil.Client);
 }

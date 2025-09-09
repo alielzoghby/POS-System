@@ -4,12 +4,15 @@
 // Learn more about theming and how to use it for your application's
 // custom components at https://material.angular.dev/guide/theming
 
+// @use './node_modules/intl-tel-input/build/css/intlTelInput.css';
 @use './tailwind.css';
 @use '@angular/material' as mat;
 
 @use './layout/layout.scss';
 @use 'primeicons/primeicons.css';
 @use './demo/demo.scss';
+
+@use './layout/ngx-intl-tel-input.scss';
 
 *::-webkit-scrollbar {
   height: 5px;

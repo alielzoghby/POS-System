@@ -446,7 +446,7 @@ export class ReturnOrderDialogComponent extends BaseComponent {
 
   confirmReturn() {
     this.customerPaidError = null;
-    if (this.change < 0) {
+    if (this.change < 0 && !this.order?.client) {
       this.customerPaidError = this.translate('POS.CUSTOMER_PAID_REQUIRED');
       return;
     }

@@ -42,4 +42,10 @@ export class ApiConstant {
   static GET_ORDERS = ApiConstant.URL_BASE + URLSegment.Orders;
   static UPDATE_ORDER = ApiConstant.URL_BASE + URLSegment.Orders + '{id}';
   static DELETE_ORDER = ApiConstant.URL_BASE + URLSegment.Orders + '{id}';
+
+  static CREATE_CLIENT = ApiConstant.URL_BASE + URLSegment.Clients;
+  static GET_CLIENT_BY_ID = ApiConstant.URL_BASE + URLSegment.Clients + '{id}';
+  static GET_CLIENTS = ApiConstant.URL_BASE + URLSegment.Clients;
+  static UPDATE_CLIENT = ApiConstant.URL_BASE + URLSegment.Clients + '{id}';
+  static DELETE_CLIENT = ApiConstant.URL_BASE + URLSegment.Clients + '{id}';
 }

@@ -74,6 +74,9 @@ export class Order {
     price: number;
     product: Pick<ProductModel, 'product_id' | 'name' | 'reference'>;
   }>;
+
+  @Expose()
+  products?: ProductModel[];
 }
 
 export class OrderAnalysis {

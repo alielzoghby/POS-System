@@ -13,6 +13,7 @@ import { Popover } from 'primeng/popover';
 import { debounceTime, distinctUntilChanged, Subject, switchMap } from 'rxjs';
 import { OrderService } from '@/pages/orders/services/order.service';
 import { Chip } from 'primeng/chip';
+import { Tag } from 'primeng/tag';
 
 @Component({
   selector: 'app-return-order-dialog',
@@ -26,6 +27,7 @@ import { Chip } from 'primeng/chip';
     PosProductListTableComponent,
     Popover,
     Chip,
+    Tag,
   ],
   template: `
     <div class="p-4 bg-surface-overlay rounded-xl shadow-md w-full max-h-screen overflow-y-auto">
@@ -68,14 +70,22 @@ import { Chip } from 'primeng/chip';
         <!-- Order Search Popover -->
         <p-popover #pop>
           <div *ngIf="searchData?.length; else noResults">
-            <ul class="list-none m-0 p-0 w-[300px]">
+            <ul class="list-none m-0 p-0">
               <li
                 *ngFor="let o of searchData; let i = index"
                 (click)="selectOrder(o, pop)"
                 [class.bg-blue-200]="i === selectedIndex"
                 class="p-2 hover:bg-gray-100 cursor-pointer"
               >
-                {{ o.reference }} - {{ o.client?.first_name }} {{ o.client?.last_name }}
+                <span class="font-medium text-nowrap">
+                  {{ o.reference }} - {{ o.total_price | currency }} -
+                  <p-tag
+                    [value]="'orders.' + o.paid_status | translate"
+                    [severity]="o.paid_status === 'PAID' ? 'success' : 'Warning'"
+                  ></p-tag>
+                  -
+                  {{ o.created_at | date: 'short' }}
+                </span>
               </li>
             </ul>
           </div>
@@ -86,7 +96,7 @@ import { Chip } from 'primeng/chip';
       </div>
 
       <!-- Content: Two columns -->
-      <div class="flex gap-6">
+      <div class="flex gap-6" *ngIf="!isExpired; else expiredTemplate">
         <!-- LEFT: Table -->
         <div class="flex-1 max-h-[500px] overflow-auto">
           <app-pos-product-list-table
@@ -158,6 +168,11 @@ import { Chip } from 'primeng/chip';
             <div class="flex justify-between  py-1">
               <span>{{ 'POS.SUB_TOTAL' | translate }}</span>
               <span>{{ calc.subTotal | currency }}</span>
+            </div>
+
+            <div class="flex justify-between py-1" *ngIf="order?.tip">
+              <span>{{ 'POS.TIP' | translate }}</span>
+              <span>{{ order?.tip | currency }}</span>
             </div>
 
             <div class="flex justify-between py-1">
@@ -233,12 +248,35 @@ import { Chip } from 'primeng/chip';
               <span>{{ 'POS.TOTAL_DUE' | translate }}</span>
               <span>{{ (calc.finalDue < 0 ? calc.finalDue * -1 : calc.finalDue) | currency }}</span>
             </div>
+
+            <!-- Payment -->
+            <div class="flex justify-between gap-3 mt-2 text-xl">
+              <label class="font-semibold">{{ 'POS.CUSTOMER_PAID' | translate }}</label>
+              <div>
+                <input
+                  pInputText
+                  type="number"
+                  [(ngModel)]="customerPaid"
+                  class="text-xl p-4 border-2 rounded-xl"
+                  (ngModelChange)="onCustomerPaidChange($event)"
+                />
+                <div *ngIf="customerPaidError" class="text-red-500 text-sm mt-1">
+                  {{ customerPaidError }}
+                </div>
+              </div>
+            </div>
+            <div class="flex justify-between gap-3 mt-2 text-xl">
+              <label class="font-semibold">{{ 'POS.CHANGE' | translate }}</label>
+              <div class="text-green-700 font-bold" [ngClass]="{ 'text-red-700': change < 0 }">
+                {{ change | currency }}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Actions -->
-      <div class="pt-4 flex justify-end gap-3">
+      <div class="pt-4 flex justify-end gap-3" *ngIf="!isExpired">
         <button
           pButton
           type="button"
@@ -251,11 +289,18 @@ import { Chip } from 'primeng/chip';
           type="button"
           class="h-[60px] "
           (click)="confirmReturn()"
-          [disabled]="!products.length || calc.finalDue < 0"
+          [disabled]="!products.length"
           [label]="'POS.CONFIRM_RETURN' | translate"
         ></button>
       </div>
     </div>
+
+    <!-- Expired Order Message -->
+    <ng-template #expiredTemplate>
+      <div class="p-6 text-center text-red-600 font-bold text-xl">
+        {{ 'POS.ORDER_EXPIRED' | translate }}
+      </div>
+    </ng-template>
   `,
 })
 export class ReturnOrderDialogComponent extends BaseComponent {
@@ -265,6 +310,8 @@ export class ReturnOrderDialogComponent extends BaseComponent {
   selectedIndex = 0;
   order?: Order | null;
   popVisible = false;
+  customerPaid = 0;
+  customerPaidError: string | null = null;
 
   calc = {
     subTotal: 0,
@@ -277,6 +324,22 @@ export class ReturnOrderDialogComponent extends BaseComponent {
     diff: 0,
     status: 'settled' as 'extra' | 'refund' | 'settled',
   };
+
+  get change() {
+    return !this.customerPaid
+      ? this.calc.finalDue
+      : this.customerPaid - Math.abs(this.calc.finalDue);
+  }
+
+  get isExpired(): boolean {
+    if (!this.order?.paid_status || this.order.paid_status === 'IN_PROGRESS') return false;
+    if (!this.order?.created_at) return false;
+    const createdAt = new Date(this.order.created_at);
+    const now = new Date();
+    const diffDays = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+    return diffDays > 14;
+  }
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { orderList?: OrderList; order?: Order },
     private dialogRef: MatDialogRef<ReturnOrderDialogComponent>,
@@ -318,6 +381,15 @@ export class ReturnOrderDialogComponent extends BaseComponent {
             this.order = null;
           }
         });
+    }
+  }
+
+  onCustomerPaidChange(value: number) {
+    this.customerPaid = value;
+    if (value && value > 0) {
+      this.customerPaidError = null;
+    } else if (!value && this.calc.diff > 0) {
+      this.customerPaidError = this.translate('POS.CUSTOMER_PAID_REQUIRED');
     }
   }
 
@@ -373,7 +445,22 @@ export class ReturnOrderDialogComponent extends BaseComponent {
   }
 
   confirmReturn() {
-    this.dialogRef.close(this.products);
+    this.customerPaidError = null;
+    if (this.change < 0) {
+      this.customerPaidError = this.translate('POS.CUSTOMER_PAID_REQUIRED');
+      return;
+    }
+
+    const returnOrder: Order = {
+      products: this.products.map(({ name, ...rest }) => rest),
+      paid: this.customerPaid + (this.order?.paid || 0),
+    };
+
+    this.load(this.orderService.updateOrder(this.order?.order_id || 0, returnOrder)).subscribe(
+      (res) => {
+        this.dialogRef.close(res);
+      }
+    );
   }
 
   cancel() {

@@ -295,6 +295,12 @@ export class OrderListComponent extends BaseComponent {
       disableClose: true,
       data: { order },
     });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.getOrders(1, this.pageSize);
+      }
+    });
   }
 
   onPageChange(event: any) {

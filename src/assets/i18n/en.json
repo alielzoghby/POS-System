@@ -81,7 +81,8 @@
     "REFUND": "Refund",
     "SETTLED": "Settled",
     "NO_DIFFERENCE": "No Difference",
-    "TOTAL_DUE": "Total Due"
+    "TOTAL_DUE": "Total Due",
+    "ORDER_EXPIRED": "This order has expired and cannot be returned."
   },
   "profile": {
     "editProfile": "Edit Profile",

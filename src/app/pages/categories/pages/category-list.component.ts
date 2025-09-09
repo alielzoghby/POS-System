@@ -35,7 +35,7 @@ import { CategoryModel } from '../model/category.model';
     <app-state-section [state]="sectionState">
       <div class="p-6 bg-surface-overlay rounded-xl shadow-md w-full">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">
+          <h2 class="text-xl font-semibold text-primary">
             {{ 'category.title' | translate }}
           </h2>
           <button
@@ -109,6 +109,7 @@ export class CategoryListComponent extends BaseComponent {
         mode: 'create',
       } satisfies CategoryDialogData,
       width: '400px',
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -127,6 +128,7 @@ export class CategoryListComponent extends BaseComponent {
         category,
       } satisfies CategoryDialogData,
       width: '400px',
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result) => {

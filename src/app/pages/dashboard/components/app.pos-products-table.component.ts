@@ -12,6 +12,9 @@ import { ProductService } from '@/pages/products/services/product.service';
 import { BaseComponent } from '@/shared/component/base-component/base.component';
 import { ProductListModel, ProductModel } from '@/pages/products/models/product.model';
 import { Popover } from 'primeng/popover';
+import { PosProductListTableComponent } from './pos-product-list-table.component';
+import { MatDialog } from '@angular/material/dialog';
+import { ReturnOrderDialogComponent } from './return-order-dialog.component';
 
 @Component({
   selector: 'app-pos-product-table',
@@ -26,6 +29,7 @@ import { Popover } from 'primeng/popover';
     HttpClientModule,
     TranslateModule,
     Popover,
+    PosProductListTableComponent,
   ],
   template: `
     <div
@@ -54,6 +58,14 @@ import { Popover } from 'primeng/popover';
           (click)="onSearchInput(barcode, pop)"
         ></button>
 
+        <button
+          pButton
+          label="Return Order"
+          class="w-[200px] h-[60px] px-6 rounded-lg"
+          icon="pi pi-undo"
+          (click)="openReturnDialog()"
+        ></button>
+
         <!-- Product Search Popover -->
         <p-popover #pop>
           <div *ngIf="searchData?.products?.length; else noResults">
@@ -76,60 +88,12 @@ import { Popover } from 'primeng/popover';
 
       <!-- Products Table -->
       <div class="flex-1 overflow-auto">
-        <p-table
-          stripedRows
-          [value]="products"
-          scrollable="true"
-          scrollHeight="100%"
-          responsiveLayout="scroll"
-          class="text-xl"
-          [style]="{ 'font-size': '1.25rem' }"
+        <app-pos-product-list-table
+          [products]="products"
+          (removeProduct)="removeProduct($event)"
+          (updateTotal)="updateTotal($event)"
         >
-          <ng-template pTemplate="header">
-            <tr class="bg-blue text-xl">
-              <th class="py-4 px-3">{{ 'POS.PRODUCT' | translate }}</th>
-              <th class="py-4 px-3">{{ 'POS.UNIT_PRICE' | translate }}</th>
-              <th class="py-4 px-3">{{ 'POS.QUANTITY' | translate }}</th>
-              <th class="py-4 px-3">{{ 'POS.TOTAL' | translate }}</th>
-              <th class="py-4 px-3">{{ 'POS.ACTIONS' | translate }}</th>
-            </tr>
-          </ng-template>
-
-          <ng-template pTemplate="body" let-product let-i="rowIndex">
-            <tr
-              class="border-b border-gray-200"
-              [ngClass]="i % 2 === 0 ? 'bg-white' : 'bg-gray-100'"
-            >
-              <td class="py-4 px-3">{{ product.name }}</td>
-              <td class="py-4 px-3">{{ product.price | currency: 'USD' }}</td>
-              <td class="py-4 px-3">
-                <p-inputNumber
-                  [(ngModel)]="product.quantity"
-                  [inputStyleClass]="'w-[50px] text-center'"
-                  [min]="1"
-                  inputStyleClass="text-xl px-3 py-2 rounded-lg"
-                  (onInput)="updateTotal(i)"
-                  [showButtons]="true"
-                  buttonLayout="horizontal"
-                  incrementButtonClass="p-button-sm p-button-rounded"
-                  decrementButtonClass="p-button-sm p-button-rounded"
-                ></p-inputNumber>
-              </td>
-              <td class="py-4 px-3 font-semibold w-[200px]">
-                {{ product.quantity * product.price | currency: 'USD' }}
-              </td>
-              <td class="py-4 px-3">
-                <button
-                  pButton
-                  class="p-button-danger w-full h-[60px] rounded-lg"
-                  (click)="removeProduct(i)"
-                >
-                  <i class="pi pi-trash"></i>
-                </button>
-              </td>
-            </tr>
-          </ng-template>
-        </p-table>
+        </app-pos-product-list-table>
       </div>
     </div>
   `,
@@ -145,13 +109,15 @@ export class PosProductTableComponent extends BaseComponent {
 
   loading = false;
   popVisible = false;
-  searchSubject = new Subject<string>();
   selectedProduct!: ProductModel | null;
   selectedIndex = 0;
 
-  constructor(private productService: ProductService) {
+  constructor(
+    private productService: ProductService,
+    private dialog: MatDialog
+  ) {
     super();
-    this.searchSubject
+    this.searchTermSubject
       .pipe(
         debounceTime(300),
         distinctUntilChanged(),
@@ -188,9 +154,9 @@ export class PosProductTableComponent extends BaseComponent {
   }
 
   onSearchInput(event: any, pop: Popover) {
-    const value = event.target.value.trim();
+    const value = typeof event === 'string' ? event.trim() : event?.target?.value?.trim();
     if (value) {
-      this.searchSubject.next(value);
+      this.searchTermSubject.next(value);
       this.selectedIndex = 0;
       if (!this.popVisible) {
         pop.show(event);
@@ -255,5 +221,11 @@ export class PosProductTableComponent extends BaseComponent {
     this.products = [];
     this.barcode = '';
     this.barcodeInput.nativeElement.focus();
+  }
+
+  openReturnDialog() {
+    const dialogRef = this.dialog.open(ReturnOrderDialogComponent, {
+      disableClose: true,
+    });
   }
 }

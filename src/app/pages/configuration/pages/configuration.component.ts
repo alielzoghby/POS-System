@@ -28,7 +28,7 @@ import { StateSectionComponent } from '@/shared/component/state-section/state-se
     <app-state-section [state]="sectionState">
       <div class="p-6 bg-surface-overlay rounded-xl shadow-md w-full">
         <div class="mb-4">
-          <h2 class="text-xl font-semibold">
+          <h2 class="text-xl font-semibold text-primary">
             {{ 'configuration.title' | translate }}
           </h2>
         </div>

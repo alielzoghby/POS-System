@@ -14,7 +14,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
     <div class="p-4 bg-surface-overlay rounded-xl shadow-md">
       <!-- Header -->
       <div class="flex justify-between items-center mb-4">
-        <h2 lass="text-lg font-bold mb-2">{{ 'voucher.title' | translate }}</h2>
+        <h2 lass="text-lg font-bold mb-2 text-primary">{{ 'voucher.title' | translate }}</h2>
 
         <button
           pButton

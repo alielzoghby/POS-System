@@ -27,7 +27,7 @@ export type CategoryDialogData = {
   template: `
     <div class="p-4 bg-surface-overlay rounded-xl shadow-md">
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-semibold">
+        <h2 class="text-xl font-semibold text-primary">
           {{
             data.mode === 'create' ? ('category.create' | translate) : ('category.edit' | translate)
           }}

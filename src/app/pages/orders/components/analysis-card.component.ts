@@ -10,7 +10,7 @@ import { CardModule } from 'primeng/card';
     <p-card [styleClass]="bgClass" class="analysis-card rounded-xl shadow-md w-full">
       <div>
         <h6>{{ title }}</h6>
-        <h4>{{ value | number: '1.2-2' | currency }}</h4>
+        <h4>{{ value | currency: 'USD' : 'symbol' : '1.2-2' }}</h4>
       </div>
     </p-card>
   `,

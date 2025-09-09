@@ -37,7 +37,7 @@ import { EditProfileDialogComponent } from '../component/edit-profile-dialog.com
 
         <!-- Info -->
         <div class="flex-1 w-full">
-          <h2 class="text-3xl font-bold mb-2">{{ user.userName }}</h2>
+          <h2 class="text-3xl font-bold mb-2 text-primary">{{ user.userName }}</h2>
           <h6 class="mb-1">
             <strong>{{ 'profile.email' | translate }}:</strong> {{ user.email }}
           </h6>
@@ -94,6 +94,7 @@ export class ProfileComponent extends BaseComponent implements OnInit {
   openEditDialog(type: 'profile' | 'password') {
     const dialogRef = this.dialog.open(EditProfileDialogComponent, {
       data: { type, user: this.user },
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result) => {

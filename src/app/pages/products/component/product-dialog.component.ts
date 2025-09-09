@@ -47,7 +47,7 @@ import { AccordionModule } from 'primeng/accordion';
     <div class="p-6 bg-surface-overlay rounded-2xl shadow-lg max-h-screen overflow-y-auto">
       <!-- Header -->
       <div class="flex justify-between items-center mb-6 border-b pb-3">
-        <h2 class="text-2xl font-semibold">
+        <h2 class="text-2xl font-semibold text-primary">
           {{
             data.product
               ? ('product.editProduct' | translate)

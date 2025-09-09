@@ -87,3 +87,6 @@ h6 {
 .p-inputnumber input {
   width: 100%;
 }
+.cdk-overlay-pane.mat-mdc-dialog-panel {
+  max-width: 100% !important;
+}

@@ -27,6 +27,7 @@ import { ReceiptTemplateComponent } from '../components/receipt-template';
 import { ViewChild } from '@angular/core';
 import { LazyDropdownComponent } from '@/shared/component/lazy-dropdown/lazy-dropdown.component';
 import { Lookup } from '@/shared/enums/lookup.enum';
+import { ReturnOrderDialogComponent } from '@/pages/dashboard/components/return-order-dialog.component';
 
 @Component({
   selector: 'app-order-list',
@@ -50,7 +51,7 @@ import { Lookup } from '@/shared/enums/lookup.enum';
     <app-state-section [state]="sectionState">
       <div class="p-6 w-full bg-surface-overlay rounded-xl shadow-md">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">{{ 'orders.ordersList' | translate }}</h2>
+          <h2 class="text-xl font-semibold text-primary">{{ 'orders.ordersList' | translate }}</h2>
         </div>
         <app-orders-analysis [analysis]="analysis"></app-orders-analysis>
 
@@ -149,7 +150,7 @@ import { Lookup } from '@/shared/enums/lookup.enum';
                 ></p-tag>
               </td>
               <td>{{ order.payment_method }}</td>
-              <td>{{ order.creator?.first_name }} {{ order.creator?.last_name }}</td>
+
               <td>
                 <!-- make icon on right -->
 
@@ -175,6 +176,7 @@ import { Lookup } from '@/shared/enums/lookup.enum';
                   </li>
                 </ul>
               </td>
+              <td>{{ order.creator?.first_name }} {{ order.creator?.last_name }}</td>
               <td>{{ order.created_at | date: 'short' }}</td>
               <td>
                 <p-splitButton
@@ -289,15 +291,10 @@ export class OrderListComponent extends BaseComponent {
   }
 
   openEditDialog(order: Order) {
-    // const dialogRef = this.dialog.open(EditOrderDialogComponent, {
-    //   data: { order },
-    //   width: '600px',
-    // });
-    // dialogRef.afterClosed().subscribe((updated) => {
-    //   if (updated) {
-    //     this.getOrders();
-    //   }
-    // });
+    const dialogRef = this.dialog.open(ReturnOrderDialogComponent, {
+      disableClose: true,
+      data: { order },
+    });
   }
 
   onPageChange(event: any) {

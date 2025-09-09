@@ -91,6 +91,7 @@ export class Dashboard extends BaseComponent {
     this.orderService.createOrder(order).subscribe((response) => {
       const dialogRef = this.dialog.open(OrderCreatedDialogComponent, {
         data: response,
+        disableClose: true,
       });
 
       dialogRef.afterClosed().subscribe((result) => {

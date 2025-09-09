@@ -48,23 +48,41 @@ import { ProductPriceTagTemplateComponent } from '../component/product-price-tag
   template: `
     <app-state-section [state]="sectionState">
       <div class="p-6 bg-surface-overlay rounded-xl shadow-md w-full">
+        <div class="mb-4">
+          <h2 class="text-xl font-semibold text-primary ">
+            {{ 'product.manage_products' | translate }}
+          </h2>
+        </div>
+
         <p-toolbar styleClass="mb-6">
           <ng-template #start>
-            <p-button
-              label="{{ 'product.new' | translate }}"
-              icon="pi pi-plus"
-              severity="secondary"
-              class="mr-2"
-              (onClick)="openNew()"
-            />
-            <p-button
-              severity="secondary"
-              label="{{ 'common.delete' | translate }}"
-              icon="pi pi-trash"
-              outlined
-              (onClick)="deleteSelectedProducts()"
-              [disabled]="!selectedProducts || !selectedProducts.length"
-            />
+            <div class="flex items-center gap-2 ">
+              <p-button
+                label="{{ 'product.new' | translate }}"
+                icon="pi pi-plus"
+                severity="secondary"
+                class="mr-2"
+                (onClick)="openNew()"
+              />
+              <p-button
+                severity="secondary"
+                label="{{ 'common.delete' | translate }}"
+                icon="pi pi-trash"
+                outlined
+                (onClick)="deleteSelectedProducts()"
+                [disabled]="!selectedProducts || !selectedProducts.length"
+              />
+
+              <p-iconfield class="ml-auto">
+                <p-inputicon styleClass="pi pi-search" />
+                <input
+                  pInputText
+                  type="text"
+                  (input)="onGlobalFilter(dt, $event)"
+                  [placeholder]="'common.search' | translate"
+                />
+              </p-iconfield>
+            </div>
           </ng-template>
         </p-toolbar>
 
@@ -86,21 +104,6 @@ import { ProductPriceTagTemplateComponent } from '../component/product-price-tag
           (onLazyLoad)="onPageChange($event)"
           class="shadow-md rounded-md"
         >
-          <ng-template #caption>
-            <div class="flex items-center justify-between">
-              <h5 class="mb-0">{{ 'product.manage_products' | translate }}</h5>
-              <p-iconfield>
-                <p-inputicon styleClass="pi pi-search" />
-                <input
-                  pInputText
-                  type="text"
-                  (input)="onGlobalFilter(dt, $event)"
-                  [placeholder]="'common.search' | translate"
-                />
-              </p-iconfield>
-            </div>
-          </ng-template>
-
           <ng-template pTemplate="header">
             <tr>
               <th style="width: 3rem">
@@ -284,6 +287,7 @@ export class ProductListComponent extends BaseComponent {
   openNew(product?: ProductModel) {
     const dialogRef = this.dialog.open(ProductDialogComponent, {
       data: { product },
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -303,6 +307,7 @@ export class ProductListComponent extends BaseComponent {
   editProduct(product: ProductModel) {
     const dialogRef = this.dialog.open(ProductDialogComponent, {
       data: { product },
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -370,6 +375,7 @@ export class ProductListComponent extends BaseComponent {
   createSubProduct(product: ProductModel) {
     const dialogRef = this.dialog.open(UnitValueDialogComponent, {
       data: product,
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result) => {

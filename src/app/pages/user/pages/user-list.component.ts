@@ -34,7 +34,7 @@ import { CreateUserDialogComponent } from '../component/create-user-dialog.compo
     <app-state-section [state]="sectionState">
       <div class="p-6 w-full  bg-surface-overlay rounded-xl shadow-md">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">
+          <h2 class="text-xl font-semibold text-primary">
             {{ 'user.usersList' | translate }}
           </h2>
           <button
@@ -122,6 +122,7 @@ export class UserListComponent extends BaseComponent {
     const dialogRef = this.dialog.open(EditProfileDialogComponent, {
       data: { type, user },
       width: '400px',
+      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((result) => {

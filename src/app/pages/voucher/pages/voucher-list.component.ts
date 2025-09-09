@@ -43,7 +43,7 @@ import { Tooltip } from 'primeng/tooltip';
     <app-state-section [state]="sectionState">
       <div class="p-6 w-full  bg-surface-overlay rounded-xl shadow-md">
         <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-semibold">
+          <h2 class="text-xl font-semibold text-primary">
             {{ 'voucher.title' | translate }}
           </h2>
 
@@ -194,6 +194,7 @@ export class VoucherListComponent extends BaseComponent implements OnInit {
       {
         width: '450px',
         data: { mode, voucher },
+        disableClose: true,
       }
     );
 
@@ -239,6 +240,7 @@ export class VoucherListComponent extends BaseComponent implements OnInit {
   onPrint(voucher: Voucher) {
     this.dialog.open(VoucherPrintComponent, {
       data: { voucher },
+      disableClose: true,
     });
   }
 

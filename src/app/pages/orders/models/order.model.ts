@@ -40,7 +40,10 @@ export class Order {
   created_at?: Date;
 
   @Expose()
-  created_by?: User;
+  creator?: User;
+
+  @Expose()
+  created_by?: number;
 
   @Expose() paid?: number;
 

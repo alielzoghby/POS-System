@@ -12,7 +12,7 @@ import { ReceiptTemplateComponent } from '@/pages/orders/components/receipt-temp
   template: `
     <div class="p-6 bg-surface-overlay rounded-xl shadow-md max-w-lg">
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-semibold text-green-600">
+        <h2 class="text-xl font-semibold text-primary">
           {{ 'orders.createdSuccess' | translate }}
         </h2>
       </div>

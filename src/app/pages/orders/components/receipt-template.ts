@@ -37,12 +37,19 @@ import JsBarcode from 'jsbarcode';
         <hr class="my-2 border-gray-300" />
         <div class="font-bold text-lg text-center">{{ 'receipt.client_info' | translate }}</div>
         <p *ngIf="order.client?.first_name || order.client?.last_name">
-          {{ 'receipt.client_name' | translate }}: {{ order.client?.first_name }}
-          {{ order.client?.last_name }}
+          {{ 'receipt.client_name' | translate }}:
+          <span class="font-bold">
+            {{ order.client.first_name }}
+            {{ order.client.last_name }}
+          </span>
         </p>
-        <p *ngIf="order.address">{{ 'receipt.client_address' | translate }}: {{ order.address }}</p>
+        <p *ngIf="order.address">
+          {{ 'receipt.client_address' | translate }}:
+          <span class="font-bold">{{ order.address }}</span>
+        </p>
         <p *ngIf="order.phone_number">
-          {{ 'receipt.client_phone' | translate }}: {{ order.phone_number }}
+          {{ 'receipt.client_phone' | translate }}:
+          <span class="font-bold">{{ order.phone_number }}</span>
         </p>
       </div>
 

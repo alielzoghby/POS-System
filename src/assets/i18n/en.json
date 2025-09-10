@@ -236,7 +236,11 @@
     "expirationDate": "Expiration Date",
     "LOT": "LOT",
     "dateAndTime": "Date and Time",
-    "finalPrice": "Final Price"
+    "finalPrice": "Final Price",
+    "client_name": "Client Name",
+    "client_address": "Client Address",
+    "client_phone": "Client Phone",
+    "client_info": "Client Information"
   },
   "orders": {
     "createdSuccess": "Order Created Successfully",

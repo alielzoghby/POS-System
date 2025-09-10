@@ -49,6 +49,10 @@ export class Order {
 
   @Expose() tax?: number;
 
+  @Expose() address?: string;
+
+  @Expose() phone_number?: string;
+
   @Expose() sub_total?: number;
 
   @Expose()

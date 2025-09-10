@@ -31,6 +31,8 @@ export class PhoneNumber {
 
   @Expose() number!: string;
 
+  @Expose() is_primary!: boolean;
+
   @Expose() type?: string;
 
   @Expose() created_at!: Date;

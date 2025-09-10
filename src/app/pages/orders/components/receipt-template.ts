@@ -26,11 +26,24 @@ import JsBarcode from 'jsbarcode';
       </div>
 
       <!-- Cashier -->
-      <div class="mb-3">
+      <div>
         <strong
-          >{{ 'receipt.helpedBy' | translate }}: {{ order.created_by?.first_name }}
-          {{ order.created_by?.last_name }}</strong
+          >{{ 'receipt.helpedBy' | translate }}: {{ order.creator?.first_name }}
+          {{ order.creator?.last_name }}</strong
         >
+      </div>
+
+      <div *ngIf="order.client">
+        <hr class="my-2 border-gray-300" />
+        <div class="font-bold text-lg text-center">{{ 'receipt.client_info' | translate }}</div>
+        <p *ngIf="order.client?.first_name || order.client?.last_name">
+          {{ 'receipt.client_name' | translate }}: {{ order.client?.first_name }}
+          {{ order.client?.last_name }}
+        </p>
+        <p *ngIf="order.address">{{ 'receipt.client_address' | translate }}: {{ order.address }}</p>
+        <p *ngIf="order.phone_number">
+          {{ 'receipt.client_phone' | translate }}: {{ order.phone_number }}
+        </p>
       </div>
 
       <hr class="my-2 border-gray-300" />

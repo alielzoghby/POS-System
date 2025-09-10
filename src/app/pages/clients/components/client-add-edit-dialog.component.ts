@@ -184,7 +184,11 @@ export type ClientDialogData = {
               </div>
               <div class="flex items-center justify-between mt-2">
                 <label class="flex items-center gap-2">
-                  <p-checkbox formControlName="is_primary" [binary]="true"></p-checkbox>
+                  <p-checkbox
+                    formControlName="is_primary"
+                    [binary]="true"
+                    (onChange)="setPrimaryAddress(i)"
+                  ></p-checkbox>
                   {{ 'client.primaryAddress' | translate }}
                 </label>
                 <button
@@ -244,7 +248,11 @@ export type ClientDialogData = {
               </div>
               <div class="flex items-center justify-between mt-2">
                 <label class="flex items-center gap-2">
-                  <p-checkbox formControlName="is_primary" [binary]="true"></p-checkbox>
+                  <p-checkbox
+                    formControlName="is_primary"
+                    [binary]="true"
+                    (onChange)="setPrimaryPhone(i)"
+                  ></p-checkbox>
                   {{ 'client.primaryPhone' | translate }}
                 </label>
                 <button
@@ -323,10 +331,14 @@ export class ClientDialogComponent extends BaseComponent implements OnInit {
       sales: [c?.sales ?? 0, Validators.min(0)],
       active: [c?.active ?? true, Validators.required],
       addresses: this.fb.array(
-        c?.addresses?.map((a) => this.buildAddress(a)) ?? [this.buildAddress()]
+        c?.addresses?.map((a, idx) =>
+          this.buildAddress({ ...a, is_primary: a.is_primary ?? idx === 0 })
+        ) ?? [this.buildAddress({ is_primary: true })]
       ),
       phoneNumbers: this.fb.array(
-        c?.phoneNumbers?.map((p) => this.buildPhoneNumber(p)) ?? [this.buildPhoneNumber()]
+        c?.phoneNumbers?.map((p, idx) =>
+          this.buildPhoneNumber({ ...p, is_primary: p.is_primary ?? idx === 0 })
+        ) ?? [this.buildPhoneNumber({ is_primary: true })]
       ),
     });
   }
@@ -393,6 +405,18 @@ export class ClientDialogComponent extends BaseComponent implements OnInit {
     const stateCode = address.get('state')?.value;
     address.patchValue({ city: '' });
     address.get('citiesList')?.setValue(City.getCitiesOfState(countryCode, stateCode) || []);
+  }
+
+  setPrimaryAddress(index: number) {
+    this.addresses.controls.forEach((ctrl, i) => {
+      ctrl.get('is_primary')?.setValue(i === index);
+    });
+  }
+
+  setPrimaryPhone(index: number) {
+    this.phoneNumbers.controls.forEach((ctrl, i) => {
+      ctrl.get('is_primary')?.setValue(i === index);
+    });
   }
 
   submit(): void {
